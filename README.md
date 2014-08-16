@@ -86,6 +86,8 @@ func main() {
 }
 ```
 
+ref. https://github.com/m0t0k1ch1/ksatriya-sample
+
 ## Dependencies
 
 * routing - https://github.com/julienschmidt/httprouter
