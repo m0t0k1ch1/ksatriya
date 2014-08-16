@@ -15,7 +15,7 @@ type Renderer struct {
 }
 
 func NewRenderer() *Renderer {
-	return &Renderer{render.New(render.Options{Layout: LayoutDefault})}
+	return &Renderer{render.New(render.Options{})}
 }
 
 func (r *Renderer) RenderText(w http.ResponseWriter, status int, text string) {
@@ -23,13 +23,13 @@ func (r *Renderer) RenderText(w http.ResponseWriter, status int, text string) {
 }
 
 func (r *Renderer) RenderHTML(w http.ResponseWriter, status int, name string, data RenderData, layout []string) {
-	htmlOptions := render.HTMLOptions{}
+	htmlOptions := render.HTMLOptions{Layout: LayoutDefault}
 	if len(layout) > 0 {
 		htmlOptions.Layout = layout[0]
 	}
-	r.Render.HTML(w, status, name, data, htmlOptions)
+	r.HTML(w, status, name, data, htmlOptions)
 }
 
 func (r *Renderer) RenderJSON(w http.ResponseWriter, status int, v interface{}) {
-	r.Render.JSON(w, status, v)
+	r.JSON(w, status, v)
 }
