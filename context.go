@@ -23,6 +23,10 @@ func (c *Context) Param(name string) string {
 	return c.Params.ByName(name)
 }
 
+func (c *Context) RenderText(status int, text string) {
+	c.Renderer.RenderText(c.Writer, status, text)
+}
+
 func (c *Context) RenderHTML(status int, name string, data RenderData, layout ...string) {
 	c.Renderer.RenderHTML(c.Writer, status, name, data, layout)
 }

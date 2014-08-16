@@ -18,6 +18,10 @@ func NewRenderer() *Renderer {
 	return &Renderer{render.New(render.Options{Layout: LayoutDefault})}
 }
 
+func (r *Renderer) RenderText(w http.ResponseWriter, status int, text string) {
+	w.Write([]byte(text))
+}
+
 func (r *Renderer) RenderHTML(w http.ResponseWriter, status int, name string, data RenderData, layout []string) {
 	htmlOptions := render.HTMLOptions{}
 	if len(layout) > 0 {
