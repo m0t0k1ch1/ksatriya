@@ -30,7 +30,7 @@ func (k *Ksatriya) Run(addr string) {
 	http.ListenAndServe(addr, k.Router)
 }
 
-func (k *Ksatriya) Handle(method, path string, handler HandlerFunc) {
+func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 		ctx := NewContext(req, Params{params}, k.Renderer)
 		ctx.Response.Result = handler(ctx)
@@ -38,24 +38,10 @@ func (k *Ksatriya) Handle(method, path string, handler HandlerFunc) {
 	})
 }
 
-func (k *Ksatriya) GET(path string, handler HandlerFunc) {
-	k.Handle("GET", path, handler)
-}
-
-func (k *Ksatriya) POST(path string, handler HandlerFunc) {
-	k.Handle("POST", path, handler)
-}
-
-func (k *Ksatriya) PUT(path string, handler HandlerFunc) {
-	k.Handle("PUT", path, handler)
-}
-
-func (k *Ksatriya) PATCH(path string, handler HandlerFunc) {
-	k.Handle("PATCH", path, handler)
-}
-
-func (k *Ksatriya) DELETE(path string, handler HandlerFunc) {
-	k.Handle("DELETE", path, handler)
+func (k *Ksatriya) RegisterController(d Dispacher) {
+	for _, handler := range d.Routes() {
+		k.Handle(handler.Method, handler.Path, handler.Func, d.Filters())
+	}
 }
 
 func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
