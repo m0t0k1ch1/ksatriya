@@ -1,35 +1,36 @@
 package ksatriya
 
-import (
-	"net/http"
-
-	"github.com/unrolled/render"
-)
-
-const LayoutDefault = "layout"
+const TmplPathBase = "template/"
 
 type RenderData map[string]interface{}
 
 type Renderer struct {
-	*render.Render
+	BaseTmplPath string
 }
 
 func NewRenderer() *Renderer {
-	return &Renderer{render.New(render.Options{})}
+	return &Renderer{}
 }
 
-func (r *Renderer) RenderText(w http.ResponseWriter, status int, text string) {
-	w.Write([]byte(text))
+func (r *Renderer) SetBaseTmpl(baseTmplPath string) {
+	r.BaseTmplPath = baseTmplPath
 }
 
-func (r *Renderer) RenderHTML(w http.ResponseWriter, status int, name string, data RenderData, layout []string) {
-	htmlOptions := render.HTMLOptions{Layout: LayoutDefault}
-	if len(layout) > 0 {
-		htmlOptions.Layout = layout[0]
+func (r *Renderer) RenderText(text string) Result {
+	return &ResultText{
+		Text: text,
 	}
-	r.HTML(w, status, name, data, htmlOptions)
 }
 
-func (r *Renderer) RenderJSON(w http.ResponseWriter, status int, v interface{}) {
-	r.JSON(w, status, v)
+func (r *Renderer) RenderJSON(data interface{}) Result {
+	return &ResultJSON{
+		Data: data,
+	}
+}
+
+func (r *Renderer) RenderHTML(tmplPath string, renderData *RenderData) Result {
+	return &ResultHTML{
+		TmplPath:   TmplPathBase + tmplPath,
+		RenderData: renderData,
+	}
 }

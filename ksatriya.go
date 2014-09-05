@@ -6,7 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type HandlerFunc func(*Context)
+type HandlerFunc func(*Context) Result
 
 type Params struct {
 	httprouter.Params
@@ -34,8 +34,9 @@ func (k *Ksatriya) Run(addr string) {
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		c := NewContext(w, req, Params{params}, k.Renderer)
-		handler(c)
+		c := NewContext(req, Params{params}, k.Renderer)
+		c.Response.Result = handler(c)
+		c.Response.Write(w)
 	})
 }
 

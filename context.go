@@ -4,18 +4,23 @@ import "net/http"
 
 type Context struct {
 	Request  *http.Request
-	Writer   http.ResponseWriter
+	Response *Response
 	Params   Params
 	Renderer *Renderer
+	Stash    map[string]interface{}
 }
 
-func NewContext(w http.ResponseWriter, req *http.Request, params Params, r *Renderer) *Context {
+func NewContext(req *http.Request, params Params, r *Renderer) *Context {
 	req.ParseForm()
 	return &Context{
-		Request:  req,
-		Writer:   w,
+		Request: req,
+		Response: &Response{
+			StatusCode: 200,
+			Header:     http.Header{},
+		},
 		Params:   params,
 		Renderer: r,
+		Stash:    map[string]interface{}{},
 	}
 }
 
@@ -23,14 +28,18 @@ func (c *Context) Param(name string) string {
 	return c.Params.ByName(name)
 }
 
-func (c *Context) RenderText(status int, text string) {
-	c.Renderer.RenderText(c.Writer, status, text)
+func (c *Context) SetStatusCode(statusCode int) {
+	c.Response.StatusCode = statusCode
 }
 
-func (c *Context) RenderHTML(status int, name string, data RenderData, layout ...string) {
-	c.Renderer.RenderHTML(c.Writer, status, name, data, layout)
+func (c *Context) RenderText(text string) Result {
+	return c.Renderer.RenderText(text)
 }
 
-func (c *Context) RenderJSON(status int, v interface{}) {
-	c.Renderer.RenderJSON(c.Writer, status, v)
+func (c *Context) RenderJSON(data interface{}) Result {
+	return c.Renderer.RenderJSON(data)
+}
+
+func (c *Context) RenderHTML(tmplPath string, renderData *RenderData) Result {
+	return c.Renderer.RenderHTML(tmplPath, renderData)
 }
