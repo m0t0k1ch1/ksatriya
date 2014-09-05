@@ -33,7 +33,8 @@ type Controller struct {
 
 func NewController() *Controller {
 	return &Controller{
-		routes: []*Handler{},
+		routes:  []*Handler{},
+		filters: map[string]FilterFunc{},
 	}
 }
 
