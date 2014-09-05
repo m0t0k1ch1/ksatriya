@@ -24,22 +24,22 @@ func NewContext(req *http.Request, params Params, r *Renderer) *Context {
 	}
 }
 
-func (c *Context) Param(name string) string {
-	return c.Params.ByName(name)
+func (ctx *Context) Param(name string) string {
+	return ctx.Params.ByName(name)
 }
 
-func (c *Context) SetStatusCode(statusCode int) {
-	c.Response.StatusCode = statusCode
+func (ctx *Context) SetStatusCode(statusCode int) {
+	ctx.Response.StatusCode = statusCode
 }
 
-func (c *Context) RenderText(text string) Result {
-	return c.Renderer.RenderText(text)
+func (ctx *Context) RenderText(text string) Result {
+	return ctx.Renderer.RenderText(text)
 }
 
-func (c *Context) RenderJSON(data interface{}) Result {
-	return c.Renderer.RenderJSON(data)
+func (ctx *Context) RenderJSON(data interface{}) Result {
+	return ctx.Renderer.RenderJSON(data)
 }
 
-func (c *Context) RenderHTML(tmplPath string, renderData *RenderData) Result {
-	return c.Renderer.RenderHTML(tmplPath, renderData)
+func (ctx *Context) RenderHTML(tmplPath string, renderData *RenderData) Result {
+	return ctx.Renderer.RenderHTML(tmplPath, renderData)
 }

@@ -32,9 +32,9 @@ func (k *Ksatriya) Run(addr string) {
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		c := NewContext(req, Params{params}, k.Renderer)
-		c.Response.Result = handler(c)
-		c.Response.Write(w)
+		ctx := NewContext(req, Params{params}, k.Renderer)
+		ctx.Response.Result = handler(ctx)
+		ctx.Response.Write(w)
 	})
 }
 
