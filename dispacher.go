@@ -5,7 +5,7 @@ const (
 	FilterKeyAfter  = "AFTER"
 )
 
-type HandlerFunc func(*Context) Result
+type HandlerFunc func(*Context)
 type FilterFunc func(*Context)
 
 type Handler struct {

@@ -32,14 +32,18 @@ func (ctx *Context) SetStatusCode(statusCode int) {
 	ctx.Response.StatusCode = statusCode
 }
 
-func (ctx *Context) RenderText(text string) Result {
-	return ctx.Renderer.RenderText(text)
+func (ctx *Context) SetTmplDir(tmplDir string) {
+	ctx.Renderer.TmplDir = tmplDir
 }
 
-func (ctx *Context) RenderJSON(data interface{}) Result {
-	return ctx.Renderer.RenderJSON(data)
+func (ctx *Context) RenderText(text string) {
+	ctx.Response.Result = ctx.Renderer.RenderText(text)
 }
 
-func (ctx *Context) RenderHTML(tmplPath string, renderData *RenderData) Result {
-	return ctx.Renderer.RenderHTML(tmplPath, renderData)
+func (ctx *Context) RenderJSON(data interface{}) {
+	ctx.Response.Result = ctx.Renderer.RenderJSON(data)
+}
+
+func (ctx *Context) RenderHTML(tmplPath string, renderData *RenderData) {
+	ctx.Response.Result = ctx.Renderer.RenderHTML(tmplPath, renderData)
 }

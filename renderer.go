@@ -1,19 +1,19 @@
 package ksatriya
 
-const TmplPathBase = "template/"
+import "fmt"
+
+const TmplDirDefault = "view"
 
 type RenderData map[string]interface{}
 
 type Renderer struct {
-	BaseTmplPath string
+	TmplDir string
 }
 
 func NewRenderer() *Renderer {
-	return &Renderer{}
-}
-
-func (r *Renderer) SetBaseTmpl(baseTmplPath string) {
-	r.BaseTmplPath = baseTmplPath
+	return &Renderer{
+		TmplDir: TmplDirDefault,
+	}
 }
 
 func (r *Renderer) RenderText(text string) Result {
@@ -30,7 +30,7 @@ func (r *Renderer) RenderJSON(data interface{}) Result {
 
 func (r *Renderer) RenderHTML(tmplPath string, renderData *RenderData) Result {
 	return &ResultHTML{
-		TmplPath:   TmplPathBase + tmplPath,
+		TmplPath:   fmt.Sprintf("%s/%s", r.TmplDir, tmplPath),
 		RenderData: renderData,
 	}
 }
