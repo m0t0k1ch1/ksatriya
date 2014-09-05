@@ -6,8 +6,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type HandlerFunc func(*Context) Result
-
 type Params struct {
 	httprouter.Params
 }
