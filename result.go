@@ -9,14 +9,14 @@ import (
 )
 
 type Result interface {
-	Apply(w http.ResponseWriter)
+	Apply(ctx *Context, w http.ResponseWriter)
 }
 
 type ResultText struct {
 	Text string
 }
 
-func (result *ResultText) Apply(w http.ResponseWriter) {
+func (result *ResultText) Apply(ctx *Context, w http.ResponseWriter) {
 	w.Write([]byte(result.Text))
 }
 
@@ -24,7 +24,7 @@ type ResultJSON struct {
 	Data interface{}
 }
 
-func (result *ResultJSON) Apply(w http.ResponseWriter) {
+func (result *ResultJSON) Apply(ctx *Context, w http.ResponseWriter) {
 	b, err := json.Marshal(result.Data)
 	if err != nil {
 		panic(err)
@@ -33,14 +33,13 @@ func (result *ResultJSON) Apply(w http.ResponseWriter) {
 }
 
 type ResultHTML struct {
-	TmplPath   string
-	RenderData *RenderData
+	TmplPath string
 }
 
-func (result *ResultHTML) Apply(w http.ResponseWriter) {
+func (result *ResultHTML) Apply(ctx *Context, w http.ResponseWriter) {
 	buffer := &bytes.Buffer{}
 	tmpl := template.Must(template.New(filepath.Base(result.TmplPath)).ParseFiles(result.TmplPath))
-	err := tmpl.Execute(w, result.RenderData)
+	err := tmpl.Execute(w, ctx.RenderArgs)
 	if err != nil {
 		panic(err)
 	}

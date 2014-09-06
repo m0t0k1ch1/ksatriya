@@ -4,7 +4,7 @@ import "fmt"
 
 const TmplDirDefault = "view"
 
-type RenderData map[string]interface{}
+type RenderArgs map[string]interface{}
 
 type Renderer struct {
 	TmplDir string
@@ -28,9 +28,8 @@ func (r *Renderer) RenderJSON(data interface{}) Result {
 	}
 }
 
-func (r *Renderer) RenderHTML(tmplPath string, renderData *RenderData) Result {
+func (r *Renderer) RenderHTML(tmplPath string) Result {
 	return &ResultHTML{
-		TmplPath:   fmt.Sprintf("%s/%s", r.TmplDir, tmplPath),
-		RenderData: renderData,
+		TmplPath: fmt.Sprintf("%s/%s", r.TmplDir, tmplPath),
 	}
 }

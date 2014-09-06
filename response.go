@@ -8,12 +8,12 @@ type Response struct {
 	Result     Result
 }
 
-func (res *Response) Write(w http.ResponseWriter) {
+func (res *Response) Write(ctx *Context, w http.ResponseWriter) {
 	for key, values := range res.Header {
 		for _, value := range values {
 			w.Header().Add(key, value)
 		}
 	}
 	w.WriteHeader(res.StatusCode)
-	res.Result.Apply(w)
+	res.Result.Apply(ctx, w)
 }

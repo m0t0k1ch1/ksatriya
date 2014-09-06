@@ -3,11 +3,12 @@ package ksatriya
 import "net/http"
 
 type Context struct {
-	Request  *http.Request
-	Response *Response
-	Params   Params
-	Renderer *Renderer
-	Stash    map[string]interface{}
+	Request    *http.Request
+	Response   *Response
+	Params     Params
+	Renderer   *Renderer
+	RenderArgs RenderArgs
+	Stash      map[string]interface{}
 }
 
 func NewContext(req *http.Request, params Params, r *Renderer) *Context {
@@ -18,9 +19,10 @@ func NewContext(req *http.Request, params Params, r *Renderer) *Context {
 			StatusCode: 200,
 			Header:     http.Header{},
 		},
-		Params:   params,
-		Renderer: r,
-		Stash:    map[string]interface{}{},
+		Params:     params,
+		Renderer:   r,
+		RenderArgs: RenderArgs{},
+		Stash:      map[string]interface{}{},
 	}
 }
 
@@ -44,6 +46,13 @@ func (ctx *Context) RenderJSON(data interface{}) {
 	ctx.Response.Result = ctx.Renderer.RenderJSON(data)
 }
 
-func (ctx *Context) RenderHTML(tmplPath string, renderData *RenderData) {
-	ctx.Response.Result = ctx.Renderer.RenderHTML(tmplPath, renderData)
+func (ctx *Context) RenderHTML(tmplPath string, renderArgs RenderArgs) {
+	for k, v := range renderArgs {
+		ctx.RenderArgs[k] = v
+	}
+	ctx.Response.Result = ctx.Renderer.RenderHTML(tmplPath)
+}
+
+func (ctx *Context) Write(w http.ResponseWriter) {
+	ctx.Response.Write(ctx, w)
 }
