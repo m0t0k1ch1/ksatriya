@@ -42,15 +42,18 @@ func (ctx *Context) SetBaseTmplPath(baseTmplPath string) {
 	ctx.Renderer.BaseTmplPath = baseTmplPath
 }
 
-func (ctx *Context) RenderText(text string) {
+func (ctx *Context) RenderText(statusCode int, text string) {
+	ctx.SetStatusCode(statusCode)
 	ctx.Response.Result = ctx.Renderer.RenderText(text)
 }
 
-func (ctx *Context) RenderJSON(data interface{}) {
+func (ctx *Context) RenderJSON(statusCode int, data interface{}) {
+	ctx.SetStatusCode(statusCode)
 	ctx.Response.Result = ctx.Renderer.RenderJSON(data)
 }
 
-func (ctx *Context) RenderHTML(tmplPath string, renderArgs RenderArgs) {
+func (ctx *Context) RenderHTML(statusCode int, tmplPath string, renderArgs RenderArgs) {
+	ctx.SetStatusCode(statusCode)
 	for k, v := range renderArgs {
 		ctx.RenderArgs[k] = v
 	}
