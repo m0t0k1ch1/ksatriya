@@ -24,6 +24,7 @@ type Dispacher interface {
 	DELETE(path string, handlerFunc HandlerFunc)
 	AddRoute(method, path string, handlerFunc HandlerFunc)
 	AddBeforeFilter(filterFunc FilterFunc)
+	AddAfterFilter(filterFunc FilterFunc)
 }
 
 type Controller struct {
