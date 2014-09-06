@@ -1,8 +1,8 @@
 package ksatriya
 
 const (
-	FilterKeyBefore = "BEFORE"
-	FilterKeyAfter  = "AFTER"
+	BeforeFilterKey = "BEFORE"
+	AfterFilterKey  = "AFTER"
 )
 
 type HandlerFunc func(*Context)
@@ -75,9 +75,9 @@ func (c *Controller) AddRoute(method, path string, handlerFunc HandlerFunc) {
 }
 
 func (c *Controller) AddBeforeFilter(filterFunc FilterFunc) {
-	c.filters[FilterKeyBefore] = filterFunc
+	c.filters[BeforeFilterKey] = filterFunc
 }
 
 func (c *Controller) AddAfterFilter(filterFunc FilterFunc) {
-	c.filters[FilterKeyAfter] = filterFunc
+	c.filters[AfterFilterKey] = filterFunc
 }

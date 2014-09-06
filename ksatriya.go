@@ -35,11 +35,11 @@ func (k *Ksatriya) Run(addr string) {
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 		ctx := NewContext(req, Params{params}, k.Renderer)
-		if filter, ok := filters[FilterKeyBefore]; ok {
+		if filter, ok := filters[BeforeFilterKey]; ok {
 			filter(ctx)
 		}
 		handler(ctx)
-		if filter, ok := filters[FilterKeyAfter]; ok {
+		if filter, ok := filters[AfterFilterKey]; ok {
 			filter(ctx)
 		}
 		ctx.Response.Write(ctx, w)
