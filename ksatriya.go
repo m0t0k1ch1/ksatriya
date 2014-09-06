@@ -3,6 +3,7 @@ package ksatriya
 import (
 	"net/http"
 
+	"github.com/jinzhu/gorm"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -11,12 +12,10 @@ type Params struct {
 }
 
 type Ksatriya struct {
-	Router         *httprouter.Router
-	Renderer       *Renderer
-	ContextBuilder ContextBuilder
+	Router   *httprouter.Router
+	Renderer *Renderer
+	DB       *gorm.DB
 }
-
-type ContextBuilder func(req *http.Request, params Params, r *Renderer) Context
 
 func New() *Ksatriya {
 	k := &Ksatriya{}
@@ -27,7 +26,6 @@ func New() *Ksatriya {
 func (k *Ksatriya) Init() {
 	k.Router = httprouter.New()
 	k.Renderer = NewRenderer()
-	k.ContextBuilder = NewContext
 }
 
 func (k *Ksatriya) Run(addr string) {
@@ -38,7 +36,10 @@ func (k *Ksatriya) Run(addr string) {
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		ctx := k.ContextBuilder(req, Params{params}, k.Renderer)
+		ctx := NewContext(req, Params{params}, k.Renderer)
+		if k.DB != nil {
+			ctx.DB = k.DB
+		}
 		if filter, ok := filters[BeforeFilterKey]; ok {
 			filter(ctx)
 		}
@@ -46,7 +47,7 @@ func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[
 		if filter, ok := filters[AfterFilterKey]; ok {
 			filter(ctx)
 		}
-		ctx.Response().Write(ctx, w)
+		ctx.Response.Write(ctx, w)
 	})
 }
 

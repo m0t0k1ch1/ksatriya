@@ -8,7 +8,7 @@ type Response struct {
 	Result     Result
 }
 
-func (res *Response) Write(ctx Context, w http.ResponseWriter) {
+func (res *Response) Write(ctx *Context, w http.ResponseWriter) {
 	for key, values := range res.Header {
 		for _, value := range values {
 			w.Header().Add(key, value)
