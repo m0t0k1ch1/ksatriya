@@ -9,6 +9,7 @@ type Context interface {
 	Param(name string) string
 	Renderer() *Renderer
 	RenderArgs() RenderArgs
+	SetRenderArg(key string, value interface{})
 	SetStatusCode(statusCode int)
 	SetTmplDir(tmplDir string)
 	SetBaseTmplPath(baseTmplPath string)
@@ -62,6 +63,10 @@ func (ctx *Ctx) Renderer() *Renderer {
 
 func (ctx *Ctx) RenderArgs() RenderArgs {
 	return ctx.renderArgs
+}
+
+func (ctx *Ctx) SetRenderArg(key string, value interface{}) {
+	ctx.renderArgs[key] = value
 }
 
 func (ctx *Ctx) SetStatusCode(statusCode int) {
