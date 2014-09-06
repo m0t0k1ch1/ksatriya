@@ -14,7 +14,7 @@ type Params struct {
 type Ksatriya struct {
 	Router   *httprouter.Router
 	Renderer *Renderer
-	DB       gorm.DB
+	DB       *gorm.DB
 }
 
 func New() *Ksatriya {
