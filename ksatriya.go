@@ -11,9 +11,12 @@ type Params struct {
 }
 
 type Ksatriya struct {
-	Router   *httprouter.Router
-	Renderer *Renderer
+	Router         *httprouter.Router
+	Renderer       *Renderer
+	ContextBuilder ContextBuilder
 }
+
+type ContextBuilder func(req *http.Request, params Params, r *Renderer) Context
 
 func New() *Ksatriya {
 	k := &Ksatriya{}
@@ -24,6 +27,7 @@ func New() *Ksatriya {
 func (k *Ksatriya) Init() {
 	k.Router = httprouter.New()
 	k.Renderer = NewRenderer()
+	k.ContextBuilder = NewContext
 }
 
 func (k *Ksatriya) Run(addr string) {
@@ -34,7 +38,7 @@ func (k *Ksatriya) Run(addr string) {
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		ctx := NewContext(req, Params{params}, k.Renderer)
+		ctx := k.ContextBuilder(req, Params{params}, k.Renderer)
 		if filter, ok := filters[BeforeFilterKey]; ok {
 			filter(ctx)
 		}
@@ -42,7 +46,7 @@ func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[
 		if filter, ok := filters[AfterFilterKey]; ok {
 			filter(ctx)
 		}
-		ctx.Response.Write(ctx, w)
+		ctx.Response().Write(ctx, w)
 	})
 }
 

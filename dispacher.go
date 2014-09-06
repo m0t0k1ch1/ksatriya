@@ -5,8 +5,8 @@ const (
 	AfterFilterKey  = "AFTER"
 )
 
-type HandlerFunc func(*Context)
-type FilterFunc func(*Context)
+type HandlerFunc func(Context)
+type FilterFunc func(Context)
 
 type Handler struct {
 	Path   string
