@@ -34,11 +34,11 @@ func NewController() *Controller {
     return c
 }
 
-func (c *Controller) Index(ctx *ksatriya.Context) {
+func (c *Controller) Index(ctx ksatriya.Context) {
     ctx.RenderText(http.StatusOK, "index")
 }
 
-func (c *Controller) User(ctx *ksatriya.Context) {
+func (c *Controller) User(ctx ksatriya.Context) {
     name := ctx.Param("name")
     ctx.RenderText(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
@@ -76,11 +76,11 @@ func NewController() *Controller {
     return c
 }
 
-func (c *Controller) Index(ctx *ksatriya.Context) {
+func (c *Controller) Index(ctx ksatriya.Context) {
     ctx.RenderText(http.StatusOK, "index")
 }
 
-func (c *Controller) User(ctx *ksatriya.Context) {
+func (c *Controller) User(ctx ksatriya.Context) {
     name := ctx.Param("name")
     ctx.RenderText(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
