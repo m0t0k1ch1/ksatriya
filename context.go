@@ -12,10 +12,10 @@ type Context struct {
 	Params     Params
 	Renderer   *Renderer
 	RenderArgs RenderArgs
-	DB         *gorm.DB
+	DB         gorm.DB
 }
 
-func NewContext(req *http.Request, params Params, r *Renderer) *Context {
+func NewContext(req *http.Request, params Params, r *Renderer, db gorm.DB) *Context {
 	req.ParseForm()
 	return &Context{
 		Request: req,
@@ -26,6 +26,7 @@ func NewContext(req *http.Request, params Params, r *Renderer) *Context {
 		Params:     params,
 		Renderer:   r,
 		RenderArgs: RenderArgs{},
+		DB:         db,
 	}
 }
 

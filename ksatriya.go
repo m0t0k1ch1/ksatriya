@@ -14,7 +14,7 @@ type Params struct {
 type Ksatriya struct {
 	Router   *httprouter.Router
 	Renderer *Renderer
-	DB       *gorm.DB
+	DB       gorm.DB
 }
 
 func New() *Ksatriya {
@@ -36,10 +36,7 @@ func (k *Ksatriya) Run(addr string) {
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		ctx := NewContext(req, Params{params}, k.Renderer)
-		if k.DB != nil {
-			ctx.DB = k.DB
-		}
+		ctx := NewContext(req, Params{params}, k.Renderer, k.DB)
 		if filter, ok := filters[BeforeFilterKey]; ok {
 			filter(ctx)
 		}
