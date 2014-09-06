@@ -27,7 +27,9 @@ func (k *Ksatriya) Init() {
 }
 
 func (k *Ksatriya) Run(addr string) {
-	http.ListenAndServe(addr, k.Router)
+	if err := http.ListenAndServe(addr, k.Router); err != nil {
+		panic(err)
+	}
 }
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
