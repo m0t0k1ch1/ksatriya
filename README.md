@@ -23,19 +23,29 @@ import (
     "github.com/m0t0k1ch1/ksatriya"
 )
 
-func Index(c *ksatriya.Context) {
-    c.RenderText(http.StatusOK, "index")
+type Controller struct {
+    *ksatriya.Controller
 }
 
-func User(c *ksatriya.Context) {
-    name := c.Param("name")
-    c.RenderText(http.StatusOK, fmt.Sprintf("hello %s!", name))
+func NewController() *Controller {
+    c := &Controller{ksatriya.NewController()}
+    c.GET("/", c.Index)
+    c.GET("/user/:name", c.User)
+    return c
+}
+
+func (c *Controller) Index(ctx *ksatriya.Context) {
+    ctx.RenderText(http.StatusOK, "index")
+}
+
+func (c *Controller) User(ctx *ksatriya.Context) {
+    name := ctx.Param("name")
+    ctx.RenderText(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
 func main() {
     k := ksatriya.New()
-    k.GET("/", Index)
-    k.GET("/user/:name", User)
+    k.RegisterController(NewController())
     k.Run(":8080")
 }
 ```
@@ -55,19 +65,29 @@ import (
     "github.com/m0t0k1ch1/ksatriya"
 )
 
-func Index(c *ksatriya.Context) {
-    c.RenderText(http.StatusOK, "index")
+type Controller struct {
+    *ksatriya.Controller
 }
 
-func User(c *ksatriya.Context) {
-    name := c.Param("name")
-    c.RenderText(http.StatusOK, fmt.Sprintf("hello %s!", name))
+func NewController() *Controller {
+    c := &Controller{ksatriya.NewController()}
+    c.GET("/", c.Index)
+    c.GET("/user/:name", c.User)
+    return c
+}
+
+func (c *Controller) Index(ctx *ksatriya.Context) {
+    ctx.RenderText(http.StatusOK, "index")
+}
+
+func (c *Controller) User(ctx *ksatriya.Context) {
+    name := ctx.Param("name")
+    ctx.RenderText(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
 func main() {
     k := ksatriya.New()
-    k.GET("/", Index)
-    k.GET("/user/:name", User)
+    k.RegisterController(NewController())
 
     n := negroni.Classic()
     n.UseHandler(k)
@@ -91,4 +111,3 @@ ref. https://github.com/m0t0k1ch1/ksatriya-sample
 ## Dependencies
 
 * routing - https://github.com/julienschmidt/httprouter
-* rendering - https://github.com/unrolled/render
