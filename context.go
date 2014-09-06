@@ -38,6 +38,10 @@ func (ctx *Context) SetTmplDir(tmplDir string) {
 	ctx.Renderer.TmplDir = tmplDir
 }
 
+func (ctx *Context) SetBaseTmplPath(baseTmplPath string) {
+	ctx.Renderer.BaseTmplPath = baseTmplPath
+}
+
 func (ctx *Context) RenderText(text string) {
 	ctx.Response.Result = ctx.Renderer.RenderText(text)
 }

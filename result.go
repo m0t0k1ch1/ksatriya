@@ -33,12 +33,18 @@ func (result *ResultJSON) Apply(ctx *Context, w http.ResponseWriter) {
 }
 
 type ResultHTML struct {
-	TmplPath string
+	BaseTmplPath string
+	TmplPath     string
 }
 
 func (result *ResultHTML) Apply(ctx *Context, w http.ResponseWriter) {
 	buffer := &bytes.Buffer{}
-	tmpl := template.Must(template.New(filepath.Base(result.TmplPath)).ParseFiles(result.TmplPath))
+	var tmpl *template.Template
+	if len(result.BaseTmplPath) > 0 {
+		tmpl = template.Must(template.New(filepath.Base(result.BaseTmplPath)).ParseFiles(result.BaseTmplPath, result.TmplPath))
+	} else {
+		tmpl = template.Must(template.New(filepath.Base(result.TmplPath)).ParseFiles(result.TmplPath))
+	}
 	err := tmpl.Execute(w, ctx.RenderArgs)
 	if err != nil {
 		panic(err)
