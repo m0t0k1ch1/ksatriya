@@ -2,18 +2,18 @@ package ksatriya
 
 import "fmt"
 
-const TmplDirDefault = "view"
+const TmplDirPathDefault = "view"
 
 type RenderArgs map[string]interface{}
 
 type View struct {
-	TmplDir      string
+	TmplDirPath  string
 	BaseTmplPath string
 }
 
 func NewView() *View {
 	return &View{
-		TmplDir: TmplDirDefault,
+		TmplDirPath: TmplDirPathDefault,
 	}
 }
 
@@ -31,10 +31,10 @@ func (v *View) JSON(data interface{}) Result {
 
 func (v *View) HTML(tmplPath string) Result {
 	result := &ResultHTML{
-		TmplPath: fmt.Sprintf("%s/%s", v.TmplDir, tmplPath),
+		TmplPath: fmt.Sprintf("%s/%s", v.TmplDirPath, tmplPath),
 	}
 	if len(v.BaseTmplPath) > 0 {
-		result.BaseTmplPath = fmt.Sprintf("%s/%s", v.TmplDir, v.BaseTmplPath)
+		result.BaseTmplPath = fmt.Sprintf("%s/%s", v.TmplDirPath, v.BaseTmplPath)
 	}
 	return result
 }

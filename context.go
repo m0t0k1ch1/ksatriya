@@ -38,8 +38,8 @@ func (ctx *Context) SetStatusCode(statusCode int) {
 	ctx.Response.StatusCode = statusCode
 }
 
-func (ctx *Context) SetTmplDir(tmplDir string) {
-	ctx.View.TmplDir = tmplDir
+func (ctx *Context) SetTmplDirPath(tmplDirPath string) {
+	ctx.View.TmplDirPath = tmplDirPath
 }
 
 func (ctx *Context) SetBaseTmplPath(baseTmplPath string) {
