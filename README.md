@@ -35,12 +35,12 @@ func NewController() *Controller {
 }
 
 func (c *Controller) Index(ctx *ksatriya.Context) {
-    ctx.RenderText(http.StatusOK, "index")
+    ctx.Text(http.StatusOK, "index")
 }
 
 func (c *Controller) User(ctx *ksatriya.Context) {
     name := ctx.Param("name")
-    ctx.RenderText(http.StatusOK, fmt.Sprintf("Hello %s!", name))
+    ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
 func main() {
@@ -77,12 +77,12 @@ func NewController() *Controller {
 }
 
 func (c *Controller) Index(ctx *ksatriya.Context) {
-    ctx.RenderText(http.StatusOK, "index")
+    ctx.Text(http.StatusOK, "index")
 }
 
 func (c *Controller) User(ctx *ksatriya.Context) {
     name := ctx.Param("name")
-    ctx.RenderText(http.StatusOK, fmt.Sprintf("Hello %s!", name))
+    ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
 func main() {
