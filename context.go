@@ -10,12 +10,12 @@ type Context struct {
 	Request    *http.Request
 	Response   *Response
 	Params     Params
-	Renderer   *Renderer
+	View       *View
 	RenderArgs RenderArgs
 	DB         *gorm.DB
 }
 
-func NewContext(req *http.Request, params Params, r *Renderer, db *gorm.DB) *Context {
+func NewContext(req *http.Request, params Params, v *View, db *gorm.DB) *Context {
 	req.ParseForm()
 	return &Context{
 		Request: req,
@@ -24,7 +24,7 @@ func NewContext(req *http.Request, params Params, r *Renderer, db *gorm.DB) *Con
 			Header:     http.Header{},
 		},
 		Params:     params,
-		Renderer:   r,
+		View:       v,
 		RenderArgs: RenderArgs{},
 		DB:         db,
 	}
@@ -39,29 +39,29 @@ func (ctx *Context) SetStatusCode(statusCode int) {
 }
 
 func (ctx *Context) SetTmplDir(tmplDir string) {
-	ctx.Renderer.TmplDir = tmplDir
+	ctx.View.TmplDir = tmplDir
 }
 
 func (ctx *Context) SetBaseTmplPath(baseTmplPath string) {
-	ctx.Renderer.BaseTmplPath = baseTmplPath
+	ctx.View.BaseTmplPath = baseTmplPath
 }
 
-func (ctx *Context) RenderText(statusCode int, text string) {
+func (ctx *Context) Text(statusCode int, text string) {
 	ctx.SetStatusCode(statusCode)
-	ctx.Response.Result = ctx.Renderer.RenderText(text)
+	ctx.Response.Result = ctx.View.Text(text)
 }
 
-func (ctx *Context) RenderJSON(statusCode int, data interface{}) {
+func (ctx *Context) JSON(statusCode int, data interface{}) {
 	ctx.SetStatusCode(statusCode)
-	ctx.Response.Result = ctx.Renderer.RenderJSON(data)
+	ctx.Response.Result = ctx.View.JSON(data)
 }
 
-func (ctx *Context) RenderHTML(statusCode int, tmplPath string, renderArgs RenderArgs) {
+func (ctx *Context) HTML(statusCode int, tmplPath string, renderArgs RenderArgs) {
 	ctx.SetStatusCode(statusCode)
 	for k, v := range renderArgs {
 		ctx.RenderArgs[k] = v
 	}
-	ctx.Response.Result = ctx.Renderer.RenderHTML(tmplPath)
+	ctx.Response.Result = ctx.View.HTML(tmplPath)
 }
 
 func (ctx *Context) Write(w http.ResponseWriter) {
