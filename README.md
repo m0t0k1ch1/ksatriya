@@ -13,6 +13,8 @@ $ go get github.com/m0t0k1ch1/ksatriya
 
 ### Basic
 
+ref. https://github.com/m0t0k1ch1/ksatriya-sample
+
 ``` go
 package main
 
@@ -105,8 +107,6 @@ func main() {
     server.Serve(listener)
 }
 ```
-
-ref. https://github.com/m0t0k1ch1/ksatriya-sample
 
 ## Dependencies
 
