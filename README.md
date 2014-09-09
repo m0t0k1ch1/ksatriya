@@ -1,6 +1,8 @@
 ksatriya
 ========
 
+[![GoDoc](https://godoc.org/github.com/m0t0k1ch1/ksatriya?status.svg)](https://godoc.org/github.com/m0t0k1ch1/ksatriya)
+
 a tiny web application framework for golang
 
 **NOTICE: ksatriya is still under development, so API might be changed in future.**
