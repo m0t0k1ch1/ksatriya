@@ -64,6 +64,12 @@ func (ctx *Context) HTML(statusCode int, tmplPath string, renderArgs RenderArgs)
 	ctx.Response.Result = ctx.View.HTML(tmplPath)
 }
 
+func (ctx *Context) Redirect(uri string) {
+	ctx.SetStatusCode(http.StatusFound)
+	ctx.Response.Header.Set("Location", uri)
+	ctx.Response.Result = ctx.View.Text("")
+}
+
 func (ctx *Context) Write(w http.ResponseWriter) {
 	ctx.Response.Write(ctx, w)
 }
