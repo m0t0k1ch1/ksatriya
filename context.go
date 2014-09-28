@@ -6,13 +6,25 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type Ctx interface {
+	Param(name string) string
+	SetStatusCode(statusCode int)
+	SetRenderArg(key string, value interface{})
+	SetTmplDirPath(tmplDirPath string)
+	SetBaseTmplPath(baseTmplPath string)
+	Text(statusCode int, text string)
+	JSON(statusCode int, data interface{})
+	HTML(statusCode int, tmplPath string, renderArgs RenderArgs)
+	Redirect(uri string)
+	Write(w http.ResponseWriter)
+}
+
 type Context struct {
 	Request    *http.Request
 	Response   *Response
 	Params     Params
 	View       *View
 	RenderArgs RenderArgs
-	DB         *gorm.DB
 }
 
 func NewContext(req *http.Request, params Params, v *View, db *gorm.DB) *Context {
@@ -26,7 +38,6 @@ func NewContext(req *http.Request, params Params, v *View, db *gorm.DB) *Context
 		Params:     params,
 		View:       v,
 		RenderArgs: RenderArgs{},
-		DB:         db,
 	}
 }
 
@@ -36,6 +47,10 @@ func (ctx *Context) Param(name string) string {
 
 func (ctx *Context) SetStatusCode(statusCode int) {
 	ctx.Response.StatusCode = statusCode
+}
+
+func (ctx *Context) SetRenderArg(key string, value interface{}) {
+	ctx.RenderArgs[key] = value
 }
 
 func (ctx *Context) SetTmplDirPath(tmplDirPath string) {
