@@ -3,7 +3,6 @@ package ksatriya
 import (
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -11,32 +10,40 @@ type Params struct {
 	httprouter.Params
 }
 
+type App interface {
+	Router() *httprouter.Router
+	View() ResultBuilder
+
+	Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc)
+	ServeHTTP(w http.ResponseWriter, req *http.Request)
+	Run(addr string)
+	RegisterController(d Dispacher)
+}
+
 type Ksatriya struct {
-	Router *httprouter.Router
-	View   *View
-	DB     *gorm.DB
+	router *httprouter.Router
+	view   ResultBuilder
 }
 
 func New() *Ksatriya {
-	k := &Ksatriya{}
-	k.Init()
+	k := &Ksatriya{
+		router: httprouter.New(),
+		view:   NewView(),
+	}
 	return k
 }
 
-func (k *Ksatriya) Init() {
-	k.Router = httprouter.New()
-	k.View = NewView()
+func (k *Ksatriya) Router() *httprouter.Router {
+	return k.router
 }
 
-func (k *Ksatriya) Run(addr string) {
-	if err := http.ListenAndServe(addr, k.Router); err != nil {
-		panic(err)
-	}
+func (k *Ksatriya) View() ResultBuilder {
+	return k.view
 }
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
-	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		ctx := NewContext(req, Params{params}, k.View, k.DB)
+	k.Router().Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		ctx := NewContext(req, Params{params}, k.View())
 		if filter, ok := filters[BeforeFilterKey]; ok {
 			filter(ctx)
 		}
@@ -48,12 +55,18 @@ func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[
 	})
 }
 
+func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	k.Router().ServeHTTP(w, req)
+}
+
+func (k *Ksatriya) Run(addr string) {
+	if err := http.ListenAndServe(addr, k.Router()); err != nil {
+		panic(err)
+	}
+}
+
 func (k *Ksatriya) RegisterController(d Dispacher) {
 	for _, handler := range d.Routes() {
 		k.Handle(handler.Method, handler.Path, handler.Func, d.Filters())
 	}
-}
-
-func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	k.Router.ServeHTTP(w, req)
 }

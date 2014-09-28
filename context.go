@@ -1,23 +1,16 @@
 package ksatriya
 
-import (
-	"net/http"
-
-	"github.com/jinzhu/gorm"
-)
+import "net/http"
 
 type Ctx interface {
 	Req() *http.Request
-	Res() *Response
+	Res() Res
 	Params() Params
 	Param(name string) string
-	View() *View
+	View() ResultBuilder
 	RenderArgs() RenderArgs
 
-	SetStatusCode(statusCode int)
 	SetRenderArg(key string, value interface{})
-	SetTmplDirPath(tmplDirPath string)
-	SetBaseTmplPath(baseTmplPath string)
 
 	Text(statusCode int, text string)
 	JSON(statusCode int, data interface{})
@@ -28,20 +21,17 @@ type Ctx interface {
 
 type Context struct {
 	request    *http.Request
-	response   *Response
+	response   Res
 	params     Params
-	view       *View
+	view       ResultBuilder
 	renderArgs RenderArgs
 }
 
-func NewContext(req *http.Request, params Params, v *View, db *gorm.DB) *Context {
+func NewContext(req *http.Request, params Params, v ResultBuilder) *Context {
 	req.ParseForm()
 	return &Context{
-		request: req,
-		response: &Response{
-			StatusCode: 200,
-			Header:     http.Header{},
-		},
+		request:    req,
+		response:   NewResponse(),
 		params:     params,
 		view:       v,
 		renderArgs: RenderArgs{},
@@ -52,7 +42,7 @@ func (ctx *Context) Req() *http.Request {
 	return ctx.request
 }
 
-func (ctx *Context) Res() *Response {
+func (ctx *Context) Res() Res {
 	return ctx.response
 }
 
@@ -64,7 +54,7 @@ func (ctx *Context) Param(name string) string {
 	return ctx.Params().ByName(name)
 }
 
-func (ctx *Context) View() *View {
+func (ctx *Context) View() ResultBuilder {
 	return ctx.view
 }
 
@@ -72,44 +62,36 @@ func (ctx *Context) RenderArgs() RenderArgs {
 	return ctx.renderArgs
 }
 
-func (ctx *Context) SetStatusCode(statusCode int) {
-	ctx.Res().StatusCode = statusCode
-}
-
 func (ctx *Context) SetRenderArg(key string, value interface{}) {
 	ctx.renderArgs[key] = value
 }
 
-func (ctx *Context) SetTmplDirPath(tmplDirPath string) {
-	ctx.View().TmplDirPath = tmplDirPath
-}
-
-func (ctx *Context) SetBaseTmplPath(baseTmplPath string) {
-	ctx.View().BaseTmplPath = baseTmplPath
-}
-
 func (ctx *Context) Text(statusCode int, text string) {
-	ctx.SetStatusCode(statusCode)
-	ctx.Res().Result = ctx.View().Text(text)
+	res := ctx.Res()
+	res.SetStatusCode(statusCode)
+	res.SetResult(ctx.View().Text(text))
 }
 
 func (ctx *Context) JSON(statusCode int, data interface{}) {
-	ctx.SetStatusCode(statusCode)
-	ctx.Res().Result = ctx.View().JSON(data)
+	res := ctx.Res()
+	res.SetStatusCode(statusCode)
+	res.SetResult(ctx.View().JSON(data))
 }
 
 func (ctx *Context) HTML(statusCode int, tmplPath string, renderArgs RenderArgs) {
-	ctx.SetStatusCode(statusCode)
+	res := ctx.Res()
+	res.SetStatusCode(statusCode)
 	for k, v := range renderArgs {
 		ctx.SetRenderArg(k, v)
 	}
-	ctx.Res().Result = ctx.View().HTML(tmplPath)
+	res.SetResult(ctx.View().HTML(tmplPath))
 }
 
 func (ctx *Context) Redirect(uri string) {
-	ctx.SetStatusCode(http.StatusFound)
-	ctx.Res().Header.Set("Location", uri)
-	ctx.Res().Result = ctx.View().Text("")
+	res := ctx.Res()
+	res.SetStatusCode(http.StatusFound)
+	res.Header().Set("Location", uri)
+	res.SetResult(ctx.View().Text(""))
 }
 
 func (ctx *Context) Write(w http.ResponseWriter) {

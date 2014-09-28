@@ -17,12 +17,14 @@ type Handler struct {
 type Dispacher interface {
 	Routes() []*Handler
 	Filters() map[string]FilterFunc
+
+	AddRoute(method, path string, handlerFunc HandlerFunc)
 	GET(path string, handlerFunc HandlerFunc)
 	POST(path string, handlerFunc HandlerFunc)
 	PUT(path string, handlerFunc HandlerFunc)
 	PATCH(path string, handlerFunc HandlerFunc)
 	DELETE(path string, handlerFunc HandlerFunc)
-	AddRoute(method, path string, handlerFunc HandlerFunc)
+
 	AddBeforeFilter(filterFunc FilterFunc)
 	AddAfterFilter(filterFunc FilterFunc)
 }
@@ -47,6 +49,14 @@ func (c *Controller) Filters() map[string]FilterFunc {
 	return c.filters
 }
 
+func (c *Controller) AddRoute(method, path string, handlerFunc HandlerFunc) {
+	c.routes = append(c.routes, &Handler{
+		Path:   path,
+		Method: method,
+		Func:   handlerFunc,
+	})
+}
+
 func (c *Controller) GET(path string, handlerFunc HandlerFunc) {
 	c.AddRoute("GET", path, handlerFunc)
 }
@@ -65,14 +75,6 @@ func (c *Controller) PATCH(path string, handlerFunc HandlerFunc) {
 
 func (c *Controller) DELETE(path string, handlerFunc HandlerFunc) {
 	c.AddRoute("DELETE", path, handlerFunc)
-}
-
-func (c *Controller) AddRoute(method, path string, handlerFunc HandlerFunc) {
-	c.routes = append(c.routes, &Handler{
-		Path:   path,
-		Method: method,
-		Func:   handlerFunc,
-	})
 }
 
 func (c *Controller) AddBeforeFilter(filterFunc FilterFunc) {
