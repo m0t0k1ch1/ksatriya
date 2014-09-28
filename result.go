@@ -45,7 +45,7 @@ func (result *ResultHTML) Apply(ctx *Context, w http.ResponseWriter) {
 	} else {
 		tmpl = template.Must(template.New(filepath.Base(result.TmplPath)).ParseFiles(result.TmplPath))
 	}
-	err := tmpl.Execute(w, ctx.RenderArgs)
+	err := tmpl.Execute(w, ctx.RenderArgs())
 	if err != nil {
 		panic(err)
 	}

@@ -44,7 +44,7 @@ func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[
 		if filter, ok := filters[AfterFilterKey]; ok {
 			filter(ctx)
 		}
-		ctx.Response.Write(ctx, w)
+		ctx.Res().Write(ctx, w)
 	})
 }
 
