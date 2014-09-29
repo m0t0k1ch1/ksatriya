@@ -21,6 +21,35 @@ ref. https://github.com/m0t0k1ch1/ksatriya-sample
 package main
 
 import (
+	"fmt"
+	"net/http"
+
+	"github.com/m0t0k1ch1/ksatriya"
+)
+
+func Index(ctx *ksatriya.Context) {
+	ctx.Text(http.StatusOK, "index")
+}
+
+func User(ctx *ksatriya.Context) {
+	name := ctx.Param("name")
+	ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
+}
+
+func main() {
+	k := ksatriya.New()
+	k.GET("/", Index)
+	k.GET("/user/:name", User)
+	k.Run(":8080")
+}
+```
+
+### Use controller
+
+``` go
+package main
+
+import (
     "fmt"
     "net/http"
 
@@ -38,11 +67,11 @@ func NewController() *Controller {
     return c
 }
 
-func (c *Controller) Index(ctx ksatriya.Ctx) {
+func (c *Controller) Index(ctx *ksatriya.Context) {
     ctx.Text(http.StatusOK, "index")
 }
 
-func (c *Controller) User(ctx ksatriya.Ctx) {
+func (c *Controller) User(ctx *ksatriya.Context) {
     name := ctx.Param("name")
     ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
@@ -60,53 +89,43 @@ func main() {
 package main
 
 import (
-    "fmt"
-    "net"
-    "net/http"
+	"fmt"
+	"net"
+	"net/http"
 
-    "github.com/codegangsta/negroni"
-    "github.com/lestrrat/go-server-starter-listener"
-    "github.com/m0t0k1ch1/ksatriya"
+	"github.com/codegangsta/negroni"
+	"github.com/lestrrat/go-server-starter-listener"
+	"github.com/m0t0k1ch1/ksatriya"
 )
 
-type Controller struct {
-    *ksatriya.Controller
+func Index(ctx *ksatriya.Context) {
+	ctx.Text(http.StatusOK, "index")
 }
 
-func NewController() *Controller {
-    c := &Controller{ksatriya.NewController()}
-    c.GET("/", c.Index)
-    c.GET("/user/:name", c.User)
-    return c
-}
-
-func (c *Controller) Index(ctx ksatriya.Ctx) {
-    ctx.Text(http.StatusOK, "index")
-}
-
-func (c *Controller) User(ctx ksatriya.Ctx) {
-    name := ctx.Param("name")
-    ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
+func User(ctx *ksatriya.Context) {
+	name := ctx.Param("name")
+	ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
 func main() {
-    k := ksatriya.New()
-    k.RegisterController(NewController())
+	n := negroni.Classic()
 
-    n := negroni.Classic()
-    n.UseHandler(k)
+	k := ksatriya.New()
+	k.GET("/", Index)
+	k.GET("/user/:name", User)
+	n.UseHandler(k)
 
-    listener, _ := ss.NewListener()
-    if listener == nil {
-        var err error
-        listener, err = net.Listen("tcp", ":8080")
-        if err != nil {
-            panic(err)
-        }
-    }
+	listener, _ := ss.NewListener()
+	if listener == nil {
+		var err error
+		listener, err = net.Listen("tcp", ":8080")
+		if err != nil {
+			panic(err)
+		}
+	}
 
-    server := &http.Server{Handler: n}
-    server.Serve(listener)
+	server := &http.Server{Handler: n}
+	server.Serve(listener)
 }
 ```
 
