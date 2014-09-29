@@ -19,19 +19,19 @@ func NewRenderConfig() *RenderConfig {
 	}
 }
 
-type Result struct {
+type View struct {
 	Renderer     Renderer
 	RenderArgs   RenderArgs
 	RenderConfig *RenderConfig
 }
 
-func NewResult() *Result {
-	return &Result{
+func NewView() *View {
+	return &View{
 		RenderArgs:   RenderArgs{},
 		RenderConfig: NewRenderConfig(),
 	}
 }
 
-func (r *Result) Render() string {
-	return r.Renderer.Render(r.RenderConfig, r.RenderArgs)
+func (v *View) Render() string {
+	return v.Renderer.Render(v.RenderConfig, v.RenderArgs)
 }
