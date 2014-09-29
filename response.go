@@ -15,14 +15,14 @@ func NewResponse() *Response {
 	}
 }
 
-func (res *Response) SetContentType(contentType string) {
-	res.Header.Set("Content-Type", contentType)
+func (res *Response) SetContentType(val string) {
+	res.Header.Set("Content-Type", val)
 }
 
 func (res *Response) Write(w http.ResponseWriter) {
-	for key, values := range res.Header {
-		for _, value := range values {
-			w.Header().Add(key, value)
+	for key, vals := range res.Header {
+		for _, val := range vals {
+			w.Header().Add(key, val)
 		}
 	}
 	w.WriteHeader(res.StatusCode)

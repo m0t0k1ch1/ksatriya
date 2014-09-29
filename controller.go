@@ -18,15 +18,15 @@ type Dispacher interface {
 	Routes() []*Handler
 	Filters() map[string]FilterFunc
 
-	AddRoute(method, path string, handlerFunc HandlerFunc)
-	GET(path string, handlerFunc HandlerFunc)
-	POST(path string, handlerFunc HandlerFunc)
-	PUT(path string, handlerFunc HandlerFunc)
-	PATCH(path string, handlerFunc HandlerFunc)
-	DELETE(path string, handlerFunc HandlerFunc)
+	AddRoute(method, path string, h HandlerFunc)
+	GET(path string, h HandlerFunc)
+	POST(path string, h HandlerFunc)
+	PUT(path string, h HandlerFunc)
+	PATCH(path string, h HandlerFunc)
+	DELETE(path string, h HandlerFunc)
 
-	AddBeforeFilter(filterFunc FilterFunc)
-	AddAfterFilter(filterFunc FilterFunc)
+	AddBeforeFilter(f FilterFunc)
+	AddAfterFilter(f FilterFunc)
 }
 
 type Controller struct {
@@ -49,38 +49,38 @@ func (c *Controller) Filters() map[string]FilterFunc {
 	return c.filters
 }
 
-func (c *Controller) AddRoute(method, path string, handlerFunc HandlerFunc) {
+func (c *Controller) AddRoute(method, path string, h HandlerFunc) {
 	c.routes = append(c.routes, &Handler{
 		Path:   path,
 		Method: method,
-		Func:   handlerFunc,
+		Func:   h,
 	})
 }
 
-func (c *Controller) GET(path string, handlerFunc HandlerFunc) {
-	c.AddRoute("GET", path, handlerFunc)
+func (c *Controller) GET(path string, h HandlerFunc) {
+	c.AddRoute("GET", path, h)
 }
 
-func (c *Controller) POST(path string, handlerFunc HandlerFunc) {
-	c.AddRoute("POST", path, handlerFunc)
+func (c *Controller) POST(path string, h HandlerFunc) {
+	c.AddRoute("POST", path, h)
 }
 
-func (c *Controller) PUT(path string, handlerFunc HandlerFunc) {
-	c.AddRoute("PUT", path, handlerFunc)
+func (c *Controller) PUT(path string, h HandlerFunc) {
+	c.AddRoute("PUT", path, h)
 }
 
-func (c *Controller) PATCH(path string, handlerFunc HandlerFunc) {
-	c.AddRoute("PATCH", path, handlerFunc)
+func (c *Controller) PATCH(path string, h HandlerFunc) {
+	c.AddRoute("PATCH", path, h)
 }
 
-func (c *Controller) DELETE(path string, handlerFunc HandlerFunc) {
-	c.AddRoute("DELETE", path, handlerFunc)
+func (c *Controller) DELETE(path string, h HandlerFunc) {
+	c.AddRoute("DELETE", path, h)
 }
 
-func (c *Controller) AddBeforeFilter(filterFunc FilterFunc) {
-	c.filters[BeforeFilterKey] = filterFunc
+func (c *Controller) AddBeforeFilter(f FilterFunc) {
+	c.filters[BeforeFilterKey] = f
 }
 
-func (c *Controller) AddAfterFilter(filterFunc FilterFunc) {
-	c.filters[AfterFilterKey] = filterFunc
+func (c *Controller) AddAfterFilter(f FilterFunc) {
+	c.filters[AfterFilterKey] = f
 }
