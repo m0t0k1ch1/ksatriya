@@ -16,7 +16,6 @@ type Ctx interface {
 	JSON(statusCode int, data interface{})
 	HTML(statusCode int, tmplPath string, renderArgs RenderArgs)
 	Redirect(uri string)
-	Write(w http.ResponseWriter)
 }
 
 type Context struct {
@@ -27,11 +26,11 @@ type Context struct {
 	renderArgs RenderArgs
 }
 
-func NewContext(req *http.Request, params Params, v ResultBuilder) *Context {
+func NewContext(w http.ResponseWriter, req *http.Request, params Params, v ResultBuilder) *Context {
 	req.ParseForm()
 	return &Context{
 		request:    req,
-		response:   NewResponse(),
+		response:   NewResponse(w),
 		params:     params,
 		view:       v,
 		renderArgs: RenderArgs{},
@@ -95,8 +94,4 @@ func (ctx *Context) Redirect(uri string) {
 	res.SetStatusCode(http.StatusFound)
 	res.Header().Set("Location", uri)
 	res.SetResult(ctx.View().Text(""))
-}
-
-func (ctx *Context) Write(w http.ResponseWriter) {
-	ctx.Res().Write(ctx, w)
 }
