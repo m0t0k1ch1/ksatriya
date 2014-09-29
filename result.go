@@ -1,71 +1,37 @@
 package ksatriya
 
-import (
-	"bytes"
-	"encoding/json"
-	"html/template"
-	"net/http"
-	"path/filepath"
+const (
+	TmplDirPathDefault  = "view"
+	BaseTmplPathDefault = ""
 )
 
-type Result interface {
-	Apply(ctx Ctx, w http.ResponseWriter)
-}
+type RenderArgs map[string]interface{}
 
-type ResultText struct {
-	Text string
-}
-
-func NewResultText(text string) *ResultText {
-	return &ResultText{
-		Text: text,
-	}
-}
-
-func (result *ResultText) Apply(ctx Ctx, w http.ResponseWriter) {
-	w.Write([]byte(result.Text))
-}
-
-type ResultJSON struct {
-	Data interface{}
-}
-
-func NewResultJSON(data interface{}) *ResultJSON {
-	return &ResultJSON{
-		Data: data,
-	}
-}
-
-func (result *ResultJSON) Apply(ctx Ctx, w http.ResponseWriter) {
-	b, err := json.Marshal(result.Data)
-	if err != nil {
-		panic(err)
-	}
-	w.Write(b)
-}
-
-type ResultHTML struct {
+type RenderConfig struct {
+	TmplDirPath  string
 	BaseTmplPath string
-	TmplPath     string
 }
 
-func NewResultHTML(tmplPath string) *ResultHTML {
-	return &ResultHTML{
-		TmplPath: tmplPath,
+func NewRenderConfig() *RenderConfig {
+	return &RenderConfig{
+		TmplDirPath:  TmplDirPathDefault,
+		BaseTmplPath: BaseTmplPathDefault,
 	}
 }
 
-func (result *ResultHTML) Apply(ctx Ctx, w http.ResponseWriter) {
-	buffer := &bytes.Buffer{}
-	var tmpl *template.Template
-	if len(result.BaseTmplPath) > 0 {
-		tmpl = template.Must(template.New(filepath.Base(result.BaseTmplPath)).ParseFiles(result.BaseTmplPath, result.TmplPath))
-	} else {
-		tmpl = template.Must(template.New(filepath.Base(result.TmplPath)).ParseFiles(result.TmplPath))
+type Result struct {
+	Renderer     Renderer
+	RenderArgs   RenderArgs
+	RenderConfig *RenderConfig
+}
+
+func NewResult() *Result {
+	return &Result{
+		RenderArgs:   RenderArgs{},
+		RenderConfig: NewRenderConfig(),
 	}
-	err := tmpl.Execute(w, ctx.RenderArgs())
-	if err != nil {
-		panic(err)
-	}
-	w.Write(buffer.Bytes())
+}
+
+func (r *Result) Render() string {
+	return r.Renderer.Render(r.RenderConfig, r.RenderArgs)
 }

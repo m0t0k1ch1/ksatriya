@@ -12,32 +12,29 @@ type Params struct {
 
 type Ksatriya struct {
 	Router *httprouter.Router
-	View   ResultBuilder
 }
 
 func New() *Ksatriya {
-	k := &Ksatriya{
+	return &Ksatriya{
 		Router: httprouter.New(),
-		View:   NewView(),
 	}
-	return k
 }
 
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		ctx := NewContext(w, req, Params{params}, k.View)
+		ctx := NewContext(req, Params{params})
 
 		if filter, ok := filters[BeforeFilterKey]; ok {
 			filter(ctx)
-			if ctx.Res().StatusCode() == http.StatusFound {
-				ctx.Res().Write(ctx)
+			if ctx.Response.StatusCode == http.StatusFound {
+				ctx.Write(w)
 				return
 			}
 		}
 
 		handler(ctx)
-		if ctx.Res().StatusCode() == http.StatusFound {
-			ctx.Res().Write(ctx)
+		if ctx.Response.StatusCode == http.StatusFound {
+			ctx.Write(w)
 			return
 		}
 
@@ -45,7 +42,7 @@ func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[
 			filter(ctx)
 		}
 
-		ctx.Res().Write(ctx)
+		ctx.Write(w)
 	})
 }
 
