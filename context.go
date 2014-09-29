@@ -69,18 +69,21 @@ func (ctx *Context) SetRenderArg(key string, value interface{}) {
 func (ctx *Context) Text(statusCode int, text string) {
 	res := ctx.Res()
 	res.SetStatusCode(statusCode)
+	res.SetContentType("text/plain")
 	res.SetResult(ctx.View().Text(text))
 }
 
 func (ctx *Context) JSON(statusCode int, data interface{}) {
 	res := ctx.Res()
 	res.SetStatusCode(statusCode)
+	res.SetContentType("application/json")
 	res.SetResult(ctx.View().JSON(data))
 }
 
 func (ctx *Context) HTML(statusCode int, tmplPath string, renderArgs RenderArgs) {
 	res := ctx.Res()
 	res.SetStatusCode(statusCode)
+	res.SetContentType("text/html")
 	for k, v := range renderArgs {
 		ctx.SetRenderArg(k, v)
 	}

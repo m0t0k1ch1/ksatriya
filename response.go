@@ -9,6 +9,7 @@ type Res interface {
 
 	SetStatusCode(statusCode int)
 	SetResult(result Result)
+	SetContentType(contentType string)
 
 	Write(ctx Ctx, w http.ResponseWriter)
 }
@@ -44,6 +45,10 @@ func (res *Response) SetStatusCode(statusCode int) {
 
 func (res *Response) SetResult(result Result) {
 	res.result = result
+}
+
+func (res *Response) SetContentType(contentType string) {
+	res.Header().Set("Content-Type", contentType)
 }
 
 func (res *Response) Write(ctx Ctx, w http.ResponseWriter) {
