@@ -26,13 +26,25 @@ func New() *Ksatriya {
 func (k *Ksatriya) Handle(method, path string, handler HandlerFunc, filters map[string]FilterFunc) {
 	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 		ctx := NewContext(w, req, Params{params}, k.View)
+
 		if filter, ok := filters[BeforeFilterKey]; ok {
 			filter(ctx)
+			if ctx.Res().StatusCode() == http.StatusFound {
+				ctx.Res().Write(ctx)
+				return
+			}
 		}
+
 		handler(ctx)
+		if ctx.Res().StatusCode() == http.StatusFound {
+			ctx.Res().Write(ctx)
+			return
+		}
+
 		if filter, ok := filters[AfterFilterKey]; ok {
 			filter(ctx)
 		}
+
 		ctx.Res().Write(ctx)
 	})
 }
