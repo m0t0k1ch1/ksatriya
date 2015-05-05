@@ -6,17 +6,21 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+const StaticDirPathDefault = "static"
+
 type Params struct {
 	httprouter.Params
 }
 
 type Ksatriya struct {
-	Router *httprouter.Router
+	Router        *httprouter.Router
+	StaticDirPath string
 }
 
 func New() *Ksatriya {
 	return &Ksatriya{
-		Router: httprouter.New(),
+		Router:        httprouter.New(),
+		StaticDirPath: StaticDirPathDefault,
 	}
 }
 
@@ -74,6 +78,10 @@ func (k *Ksatriya) RegisterController(d Dispacher) {
 	for _, handler := range d.Routes() {
 		k.Handle(handler.Method, handler.Path, handler.Func, d.Filters())
 	}
+}
+
+func (k *Ksatriya) ServeFiles() {
+	k.Router.ServeFiles("/"+k.StaticDirPath+"/*filepath", http.Dir(k.StaticDirPath))
 }
 
 func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
