@@ -77,7 +77,7 @@ func (k *Ksatriya) RegisterController(d Dispacher) {
 }
 
 func (k *Ksatriya) ServeFiles() {
-	k.Router.ServeFiles("/"+k.StaticDirPath+"/*filepath", http.Dir(k.StaticDirPath))
+	k.Router.ServeFiles("/static/*filepath", http.Dir(k.StaticDirPath))
 }
 
 func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
