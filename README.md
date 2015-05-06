@@ -32,7 +32,7 @@ func Index(ctx *ksatriya.Context) {
 }
 
 func User(ctx *ksatriya.Context) {
-	name := ctx.Param("name")
+	name := ctx.Arg("name")
 	ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
@@ -72,7 +72,7 @@ func (c *Controller) Index(ctx *ksatriya.Context) {
 }
 
 func (c *Controller) User(ctx *ksatriya.Context) {
-    name := ctx.Param("name")
+    name := ctx.Arg("name")
     ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
@@ -103,7 +103,7 @@ func Index(ctx *ksatriya.Context) {
 }
 
 func User(ctx *ksatriya.Context) {
-	name := ctx.Param("name")
+	name := ctx.Arg("name")
 	ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
 
