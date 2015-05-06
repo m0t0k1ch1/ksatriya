@@ -8,10 +8,6 @@ import (
 
 const StaticDirPathDefault = "static"
 
-type Params struct {
-	httprouter.Params
-}
-
 type Ksatriya struct {
 	Router        *httprouter.Router
 	StaticDirPath string
@@ -25,8 +21,8 @@ func New() *Ksatriya {
 }
 
 func (k *Ksatriya) Handle(method, path string, h HandlerFunc, filters map[string]FilterFunc) {
-	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		ctx := NewContext(req, Params{params})
+	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
+		ctx := NewContext(req, args)
 
 		if f, ok := filters[BeforeFilterKey]; ok {
 			f(ctx)

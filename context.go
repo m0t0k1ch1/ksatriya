@@ -1,21 +1,33 @@
 package ksatriya
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+)
+
+type Args struct {
+	httprouter.Params
+}
+type Params map[string][]string
 
 type Context struct {
 	Request  *http.Request
 	Response *Response
-	Params   Params
 	View     *View
+	Args     Args
+	Params   Params
 }
 
-func NewContext(req *http.Request, params Params) *Context {
+func NewContext(req *http.Request, args httprouter.Params) *Context {
 	req.ParseForm()
+	params := map[string][]string(req.Form)
 	return &Context{
 		Request:  req,
 		Response: NewResponse(),
-		Params:   params,
 		View:     NewView(),
+		Args:     Args{args},
+		Params:   params,
 	}
 }
 
@@ -31,8 +43,22 @@ func (ctx *Context) SetRenderArg(key string, val interface{}) {
 	ctx.View.RenderArgs[key] = val
 }
 
-func (ctx *Context) Param(name string) string {
-	return ctx.Params.ByName(name)
+func (ctx *Context) Arg(name string) string {
+	return ctx.Args.ByName(name)
+}
+
+func (ctx *Context) Param(name string) ([]string, bool) {
+	param, found := ctx.Params[name]
+	return param, found
+}
+
+func (ctx *Context) ParamSingle(name string) (string, bool) {
+	if param, found := ctx.Param(name); found {
+		if len(param) > 0 {
+			return param[0], true
+		}
+	}
+	return "", false
 }
 
 func (ctx *Context) Text(stat int, text string) {
