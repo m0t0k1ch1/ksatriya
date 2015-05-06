@@ -12,43 +12,53 @@ type Args struct {
 type Params map[string][]string
 
 type Context struct {
-	Request  *http.Request
-	Response *Response
-	View     *View
-	Args     Args
-	Params   Params
+	request  *http.Request
+	response *Response
+	view     *View
+	args     Args
+	params   Params
 }
 
 func NewContext(req *http.Request, args httprouter.Params) *Context {
 	req.ParseForm()
 	params := map[string][]string(req.Form)
+
 	return &Context{
-		Request:  req,
-		Response: NewResponse(),
-		View:     NewView(),
-		Args:     Args{args},
-		Params:   params,
+		request:  req,
+		response: NewResponse(),
+		view:     NewView(),
+		args:     Args{args},
+		params:   params,
 	}
 }
 
-func (ctx *Context) SetTmplDirPath(val string) {
-	ctx.View.RenderConfig.TmplDirPath = val
+func (ctx *Context) Request() *http.Request {
+	return ctx.request
 }
 
-func (ctx *Context) SetBaseTmplPath(val string) {
-	ctx.View.RenderConfig.BaseTmplPath = val
+func (ctx *Context) Response() *Response {
+	return ctx.response
 }
 
-func (ctx *Context) SetRenderArg(key string, val interface{}) {
-	ctx.View.RenderArgs[key] = val
+func (ctx *Context) View() *View {
+	return ctx.view
+}
+
+func (ctx *Context) Args() Args {
+	return ctx.args
 }
 
 func (ctx *Context) Arg(name string) string {
-	return ctx.Args.ByName(name)
+	return ctx.Args().ByName(name)
+}
+
+func (ctx *Context) Params() Params {
+	return ctx.params
 }
 
 func (ctx *Context) Param(name string) ([]string, bool) {
-	param, found := ctx.Params[name]
+	params := ctx.Params()
+	param, found := params[name]
 	return param, found
 }
 
@@ -62,35 +72,35 @@ func (ctx *Context) ParamSingle(name string) string {
 }
 
 func (ctx *Context) Text(stat int, text string) {
-	res := ctx.Response
-	res.StatusCode = stat
+	res := ctx.Response()
+	res.SetStatusCode(stat)
 	res.SetContentType("text/plain")
-	ctx.View.Renderer = NewTextRenderer(text)
+	ctx.View().SetRenderer(NewTextRenderer(text))
 }
 
 func (ctx *Context) JSON(stat int, data interface{}) {
-	res := ctx.Response
-	res.StatusCode = stat
+	res := ctx.Response()
+	res.SetStatusCode(stat)
 	res.SetContentType("application/json")
-	ctx.View.Renderer = NewJSONRenderer(data)
+	ctx.View().SetRenderer(NewJSONRenderer(data))
 }
 
 func (ctx *Context) HTML(stat int, tmplPath string, args RenderArgs) {
-	res := ctx.Response
-	res.StatusCode = stat
+	res := ctx.Response()
+	res.SetStatusCode(stat)
 	res.SetContentType("text/html")
-	ctx.View.Renderer = NewHTMLRenderer(tmplPath, args)
+	ctx.View().SetRenderer(NewHTMLRenderer(tmplPath, args))
 }
 
 func (ctx *Context) Redirect(uri string) {
-	res := ctx.Response
-	res.StatusCode = http.StatusFound
-	res.Header.Set("Location", uri)
-	ctx.View.Renderer = NewTextRenderer("")
+	res := ctx.Response()
+	res.SetStatusCode(http.StatusFound)
+	res.SetHeader("Location", uri)
+	ctx.View().SetRenderer(NewTextRenderer(""))
 }
 
 func (ctx *Context) Write(w http.ResponseWriter) {
-	res := ctx.Response
-	res.Body = ctx.View.Render()
+	res := ctx.Response()
+	res.SetBody(ctx.View().Render())
 	res.Write(w)
 }

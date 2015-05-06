@@ -6,86 +6,120 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-const StaticDirPathDefault = "static"
+const (
+	RootPathDefault = "/static"
+	RootDirDefault  = "static"
+)
+
+type Root struct {
+	path string
+	dir  http.FileSystem
+}
+
+func NewRoot() *Root {
+	root := &Root{}
+	root.SetPath(RootPathDefault)
+	root.SetDir(RootDirDefault)
+	return root
+}
+
+func (root *Root) Path() string {
+	return root.path
+}
+func (root *Root) SetPath(val string) {
+	root.path = val + "/*filepath"
+}
+
+func (root *Root) Dir() http.FileSystem {
+	return root.dir
+}
+func (root *Root) SetDir(val string) {
+	root.dir = http.Dir(val)
+}
 
 type Ksatriya struct {
-	Router        *httprouter.Router
-	StaticDirPath string
+	router *httprouter.Router
+	root   *Root
 }
 
 func New() *Ksatriya {
 	return &Ksatriya{
-		Router:        httprouter.New(),
-		StaticDirPath: StaticDirPathDefault,
+		router: httprouter.New(),
+		root:   NewRoot(),
 	}
 }
 
-func (k *Ksatriya) Handle(method, path string, h HandlerFunc, filters map[string]FilterFunc) {
-	k.Router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
+func (k *Ksatriya) Root() *Root {
+	return k.root
+}
+
+func (k *Ksatriya) handle(method, path string, hf HandlerFunc, filterFuncs map[string]FilterFunc) {
+	k.router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
 		ctx := NewContext(req, args)
 
-		if f, ok := filters[BeforeFilterKey]; ok {
-			f(ctx)
-			if ctx.Response.StatusCode == http.StatusFound {
+		if ff, ok := filterFuncs[BeforeFilterFuncKey]; ok {
+			ff(ctx)
+			if ctx.Response().StatusCode() == http.StatusFound {
 				ctx.Write(w)
 				return
 			}
 		}
 
-		h(ctx)
-		if ctx.Response.StatusCode == http.StatusFound {
+		hf(ctx)
+		if ctx.Response().StatusCode() == http.StatusFound {
 			ctx.Write(w)
 			return
 		}
 
-		if f, ok := filters[AfterFilterKey]; ok {
-			f(ctx)
+		if ff, ok := filterFuncs[AfterFilterFuncKey]; ok {
+			ff(ctx)
 		}
 
 		ctx.Write(w)
 	})
 }
 
-func (k *Ksatriya) AddRoute(method, path string, h HandlerFunc) {
-	k.Handle(method, path, h, map[string]FilterFunc{})
+func (k *Ksatriya) AddRoute(method, path string, hf HandlerFunc) {
+	k.handle(method, path, hf, map[string]FilterFunc{})
 }
 
-func (k *Ksatriya) GET(path string, h HandlerFunc) {
-	k.AddRoute("GET", path, h)
+func (k *Ksatriya) GET(path string, hf HandlerFunc) {
+	k.AddRoute("GET", path, hf)
 }
 
-func (k *Ksatriya) POST(path string, h HandlerFunc) {
-	k.AddRoute("POST", path, h)
+func (k *Ksatriya) POST(path string, hf HandlerFunc) {
+	k.AddRoute("POST", path, hf)
 }
 
-func (k *Ksatriya) PUT(path string, h HandlerFunc) {
-	k.AddRoute("PUT", path, h)
+func (k *Ksatriya) PUT(path string, hf HandlerFunc) {
+	k.AddRoute("PUT", path, hf)
 }
 
-func (k *Ksatriya) PATCH(path string, h HandlerFunc) {
-	k.AddRoute("PATCH", path, h)
+func (k *Ksatriya) PATCH(path string, hf HandlerFunc) {
+	k.AddRoute("PATCH", path, hf)
 }
 
-func (k *Ksatriya) DELETE(path string, h HandlerFunc) {
-	k.AddRoute("DELETE", path, h)
+func (k *Ksatriya) DELETE(path string, hf HandlerFunc) {
+	k.AddRoute("DELETE", path, hf)
 }
 
 func (k *Ksatriya) RegisterController(d Dispacher) {
-	for _, handler := range d.Routes() {
-		k.Handle(handler.Method, handler.Path, handler.Func, d.Filters())
+	for _, h := range d.Routes() {
+		k.handle(h.Method(), h.Path(), h.HandlerFunc(), d.FilterFuncs())
 	}
 }
 
-func (k *Ksatriya) ServeFiles() {
-	k.Router.ServeFiles("/static/*filepath", http.Dir(k.StaticDirPath))
+func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	k.router.ServeHTTP(w, req)
 }
 
-func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	k.Router.ServeHTTP(w, req)
+func (k *Ksatriya) ServeFiles() {
+	root := k.Root()
+	k.router.ServeFiles(root.Path(), root.Dir())
 }
 
 func (k *Ksatriya) Run(addr string) {
-	if err := http.ListenAndServe(addr, k.Router); err != nil {
+	if err := http.ListenAndServe(addr, k.router); err != nil {
 		panic(err)
 	}
 }

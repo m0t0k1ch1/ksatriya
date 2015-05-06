@@ -1,43 +1,55 @@
 package ksatriya
 
 const (
-	BeforeFilterKey = "BEFORE"
-	AfterFilterKey  = "AFTER"
+	BeforeFilterFuncKey = "BEFORE"
+	AfterFilterFuncKey  = "AFTER"
 )
 
 type HandlerFunc func(*Context)
 type FilterFunc func(*Context)
 
 type Handler struct {
-	Path   string
-	Method string
-	Func   HandlerFunc
+	method      string
+	path        string
+	handlerFunc HandlerFunc
+}
+
+func (h *Handler) Method() string {
+	return h.method
+}
+
+func (h *Handler) Path() string {
+	return h.path
+}
+
+func (h *Handler) HandlerFunc() HandlerFunc {
+	return h.handlerFunc
 }
 
 type Dispacher interface {
 	Routes() []*Handler
-	Filters() map[string]FilterFunc
+	FilterFuncs() map[string]FilterFunc
 
-	AddRoute(method, path string, h HandlerFunc)
-	GET(path string, h HandlerFunc)
-	POST(path string, h HandlerFunc)
-	PUT(path string, h HandlerFunc)
-	PATCH(path string, h HandlerFunc)
-	DELETE(path string, h HandlerFunc)
+	AddRoute(method, path string, hf HandlerFunc)
+	GET(path string, hf HandlerFunc)
+	POST(path string, hf HandlerFunc)
+	PUT(path string, hf HandlerFunc)
+	PATCH(path string, hf HandlerFunc)
+	DELETE(path string, hf HandlerFunc)
 
-	AddBeforeFilter(f FilterFunc)
-	AddAfterFilter(f FilterFunc)
+	AddBeforeFilter(ff FilterFunc)
+	AddAfterFilter(ff FilterFunc)
 }
 
 type Controller struct {
-	routes  []*Handler
-	filters map[string]FilterFunc
+	routes      []*Handler
+	filterFuncs map[string]FilterFunc
 }
 
 func NewController() *Controller {
 	return &Controller{
-		routes:  []*Handler{},
-		filters: map[string]FilterFunc{},
+		routes:      []*Handler{},
+		filterFuncs: map[string]FilterFunc{},
 	}
 }
 
@@ -45,42 +57,43 @@ func (c *Controller) Routes() []*Handler {
 	return c.routes
 }
 
-func (c *Controller) Filters() map[string]FilterFunc {
-	return c.filters
+func (c *Controller) FilterFuncs() map[string]FilterFunc {
+	return c.filterFuncs
 }
 
-func (c *Controller) AddRoute(method, path string, h HandlerFunc) {
-	c.routes = append(c.routes, &Handler{
-		Path:   path,
-		Method: method,
-		Func:   h,
-	})
+func (c *Controller) AddRoute(method, path string, hf HandlerFunc) {
+	h := &Handler{
+		method:      method,
+		path:        path,
+		handlerFunc: hf,
+	}
+	c.routes = append(c.routes, h)
 }
 
-func (c *Controller) GET(path string, h HandlerFunc) {
-	c.AddRoute("GET", path, h)
+func (c *Controller) GET(path string, hf HandlerFunc) {
+	c.AddRoute("GET", path, hf)
 }
 
-func (c *Controller) POST(path string, h HandlerFunc) {
-	c.AddRoute("POST", path, h)
+func (c *Controller) POST(path string, hf HandlerFunc) {
+	c.AddRoute("POST", path, hf)
 }
 
-func (c *Controller) PUT(path string, h HandlerFunc) {
-	c.AddRoute("PUT", path, h)
+func (c *Controller) PUT(path string, hf HandlerFunc) {
+	c.AddRoute("PUT", path, hf)
 }
 
-func (c *Controller) PATCH(path string, h HandlerFunc) {
-	c.AddRoute("PATCH", path, h)
+func (c *Controller) PATCH(path string, hf HandlerFunc) {
+	c.AddRoute("PATCH", path, hf)
 }
 
-func (c *Controller) DELETE(path string, h HandlerFunc) {
-	c.AddRoute("DELETE", path, h)
+func (c *Controller) DELETE(path string, hf HandlerFunc) {
+	c.AddRoute("DELETE", path, hf)
 }
 
-func (c *Controller) AddBeforeFilter(f FilterFunc) {
-	c.filters[BeforeFilterKey] = f
+func (c *Controller) AddBeforeFilter(ff FilterFunc) {
+	c.filterFuncs[BeforeFilterFuncKey] = ff
 }
 
-func (c *Controller) AddAfterFilter(f FilterFunc) {
-	c.filters[AfterFilterKey] = f
+func (c *Controller) AddAfterFilter(ff FilterFunc) {
+	c.filterFuncs[AfterFilterFuncKey] = ff
 }
