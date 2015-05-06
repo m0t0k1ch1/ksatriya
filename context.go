@@ -52,13 +52,13 @@ func (ctx *Context) Param(name string) ([]string, bool) {
 	return param, found
 }
 
-func (ctx *Context) ParamSingle(name string) (string, bool) {
+func (ctx *Context) ParamSingle(name string) string {
 	if param, found := ctx.Param(name); found {
 		if len(param) > 0 {
-			return param[0], true
+			return param[0]
 		}
 	}
-	return "", false
+	return ""
 }
 
 func (ctx *Context) Text(stat int, text string) {
