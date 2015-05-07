@@ -2,14 +2,14 @@ package ksatriya
 
 type View struct {
 	renderer     Renderer
-	renderArgs   RenderArgs
 	renderConfig *RenderConfig
+	renderArgs   RenderArgs
 }
 
 func NewView() *View {
 	return &View{
-		renderArgs:   RenderArgs{},
 		renderConfig: NewRenderConfig(),
+		renderArgs:   RenderArgs{},
 	}
 }
 
@@ -20,6 +20,10 @@ func (v *View) SetRenderer(val Renderer) {
 	v.renderer = val
 }
 
+func (v *View) RenderConfig() *RenderConfig {
+	return v.renderConfig
+}
+
 func (v *View) RenderArgs() RenderArgs {
 	return v.renderArgs
 }
@@ -27,10 +31,6 @@ func (v *View) SetRenderArg(key string, val interface{}) {
 	v.renderArgs[key] = val
 }
 
-func (v *View) RenderConfig() *RenderConfig {
-	return v.renderConfig
-}
-
 func (v *View) Render() string {
-	return v.Renderer().Render(v.RenderConfig(), v.renderArgs)
+	return v.Renderer().Render(v.RenderConfig(), v.RenderArgs())
 }
