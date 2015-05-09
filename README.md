@@ -83,7 +83,7 @@ func main() {
 }
 ```
 
-### With [negroni](https://github.com/codegangsta/negroni) and [go-server-starter-listner](https://github.com/lestrrat/go-server-starter-listener)
+### With [negroni](https://github.com/codegangsta/negroni) and [go-server-starter](https://github.com/lestrrat/go-server-starter)
 
 ``` go
 package main
@@ -94,7 +94,7 @@ import (
 	"net/http"
 
 	"github.com/codegangsta/negroni"
-	"github.com/lestrrat/go-server-starter-listener"
+	"github.com/lestrrat/go-server-starter/listener"
 	"github.com/m0t0k1ch1/ksatriya"
 )
 
@@ -108,24 +108,29 @@ func User(ctx *ksatriya.Context) {
 }
 
 func main() {
-	n := negroni.Classic()
-
 	k := ksatriya.New()
 	k.GET("/", Index)
 	k.GET("/user/:name", User)
+
+	n := negroni.Classic()
 	n.UseHandler(k)
 
-	listener, _ := ss.NewListener()
-	if listener == nil {
-		var err error
-		listener, err = net.Listen("tcp", ":8080")
+	listeners, err := listener.ListenAll()
+	if err != nil {
+		panic(err)
+	}
+	var l net.Listener
+	if len(listeners) == 0 {
+		l, err = net.Listen("tcp", ":8080")
 		if err != nil {
 			panic(err)
 		}
+	} else {
+		l = listeners[0]
 	}
 
 	server := &http.Server{Handler: n}
-	server.Serve(listener)
+	server.Serve(l)
 }
 ```
 
