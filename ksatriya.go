@@ -59,14 +59,14 @@ func (k *Ksatriya) handle(method, path string, hf HandlerFunc, filterFuncs map[s
 
 		if ff, ok := filterFuncs[BeforeFilterFuncKey]; ok {
 			ff(ctx)
-			if ctx.Response().StatusCode() == http.StatusFound {
+			if ctx.Res().StatusCode() == http.StatusFound {
 				ctx.Write(w)
 				return
 			}
 		}
 
 		hf(ctx)
-		if ctx.Response().StatusCode() == http.StatusFound {
+		if ctx.Res().StatusCode() == http.StatusFound {
 			ctx.Write(w)
 			return
 		}

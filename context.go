@@ -32,11 +32,11 @@ func NewContext(req *http.Request, args httprouter.Params) *Context {
 	}
 }
 
-func (ctx *Context) Request() *http.Request {
+func (ctx *Context) Req() *http.Request {
 	return ctx.request
 }
 
-func (ctx *Context) Response() *Response {
+func (ctx *Context) Res() *Response {
 	return ctx.response
 }
 
@@ -72,35 +72,35 @@ func (ctx *Context) ParamSingle(name string) string {
 }
 
 func (ctx *Context) Text(stat int, text string) {
-	res := ctx.Response()
+	res := ctx.Res()
 	res.SetStatusCode(stat)
 	res.SetContentType("text/plain")
 	ctx.View().SetRenderer(NewTextRenderer(text))
 }
 
 func (ctx *Context) JSON(stat int, data interface{}) {
-	res := ctx.Response()
+	res := ctx.Res()
 	res.SetStatusCode(stat)
 	res.SetContentType("application/json")
 	ctx.View().SetRenderer(NewJSONRenderer(data))
 }
 
 func (ctx *Context) HTML(stat int, tmplPath string, args RenderArgs) {
-	res := ctx.Response()
+	res := ctx.Res()
 	res.SetStatusCode(stat)
 	res.SetContentType("text/html")
 	ctx.View().SetRenderer(NewHTMLRenderer(tmplPath, args))
 }
 
 func (ctx *Context) Redirect(uri string) {
-	res := ctx.Response()
+	res := ctx.Res()
 	res.SetStatusCode(http.StatusFound)
 	res.SetHeader("Location", uri)
 	ctx.View().SetRenderer(NewTextRenderer(""))
 }
 
 func (ctx *Context) Write(w http.ResponseWriter) {
-	res := ctx.Response()
+	res := ctx.Res()
 	res.SetBody(ctx.View().Render())
 	res.Write(w)
 }
