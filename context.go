@@ -11,6 +11,8 @@ type Args struct {
 }
 type Params map[string][]string
 
+type CtxBuilder func(w http.ResponseWriter, req *http.Request, args Args) Ctx
+
 type Ctx interface {
 	Req() *http.Request
 	Res() *Response
@@ -35,7 +37,7 @@ type Context struct {
 	params   Params
 }
 
-func NewContext(req *http.Request, args httprouter.Params) *Context {
+func NewContext(w http.ResponseWriter, req *http.Request, args Args) Ctx {
 	req.ParseForm()
 	params := map[string][]string(req.Form)
 
@@ -43,7 +45,7 @@ func NewContext(req *http.Request, args httprouter.Params) *Context {
 		request:  req,
 		response: NewResponse(),
 		view:     NewView(),
-		args:     Args{args},
+		args:     args,
 		params:   params,
 	}
 }

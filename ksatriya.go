@@ -38,14 +38,16 @@ func (root *Root) SetDir(val string) {
 }
 
 type Ksatriya struct {
-	router *httprouter.Router
-	root   *Root
+	router     *httprouter.Router
+	root       *Root
+	ctxBuilder CtxBuilder
 }
 
 func New() *Ksatriya {
 	return &Ksatriya{
-		router: httprouter.New(),
-		root:   NewRoot(),
+		router:     httprouter.New(),
+		root:       NewRoot(),
+		ctxBuilder: NewContext,
 	}
 }
 
@@ -53,9 +55,13 @@ func (k *Ksatriya) Root() *Root {
 	return k.root
 }
 
+func (k *Ksatriya) SetCtxBuilder(f CtxBuilder) {
+	k.ctxBuilder = f
+}
+
 func (k *Ksatriya) handle(method, path string, hf HandlerFunc, filterFuncs map[string]FilterFunc) {
 	k.router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
-		ctx := NewContext(req, args)
+		ctx := k.ctxBuilder(w, req, Args{args})
 
 		if ff, ok := filterFuncs[BeforeFilterFuncKey]; ok {
 			ff(ctx)
