@@ -11,8 +11,6 @@ type Args struct {
 }
 type Params map[string][]string
 
-type CtxBuilder func(w http.ResponseWriter, req *http.Request, args Args) Ctx
-
 type Ctx interface {
 	Req() *http.Request
 	Res() *Response
@@ -28,6 +26,8 @@ type Ctx interface {
 	Redirect(string)
 	Write(http.ResponseWriter)
 }
+
+type CtxBuilder func(w http.ResponseWriter, req *http.Request, args Args) Ctx
 
 type Context struct {
 	request  *http.Request
