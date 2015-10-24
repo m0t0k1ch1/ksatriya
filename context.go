@@ -17,10 +17,7 @@ type Context struct {
 	view     *View
 	args     Args
 	params   Params
-	Stash    map[string]interface{}
 }
-
-type ContextInitializer func(ctx *Context)
 
 func NewContext(req *http.Request, args httprouter.Params) *Context {
 	req.ParseForm()
@@ -32,7 +29,6 @@ func NewContext(req *http.Request, args httprouter.Params) *Context {
 		view:     NewView(),
 		args:     Args{args},
 		params:   params,
-		Stash:    map[string]interface{}{},
 	}
 }
 
