@@ -11,6 +11,22 @@ type Args struct {
 }
 type Params map[string][]string
 
+type Ctx interface {
+	Req() *http.Request
+	Res() *Response
+	View() *View
+	Args() Args
+	Arg(string) string
+	Params() Params
+	Param(string) ([]string, bool)
+	ParamSingle(string) string
+	Text(int, string)
+	JSON(int, interface{})
+	HTML(int, string, RenderArgs)
+	Redirect(string)
+	Write(http.ResponseWriter)
+}
+
 type Context struct {
 	request  *http.Request
 	response *Response
