@@ -131,10 +131,7 @@ func Ping(ctx *Context) {
 	ctx.Text(http.StatusOK, string(body))
 }
 
-func PongHandler(kctx ksatriya.Ctx) {
-	Pong(convertContext(kctx))
-}
-func Pong(ctx *Context) {
+func PongHandler(ctx ksatriya.Ctx) {
 	ctx.Text(http.StatusOK, "pong")
 }
 
