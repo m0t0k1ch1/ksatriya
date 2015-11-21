@@ -27,11 +27,11 @@ import (
 	"github.com/m0t0k1ch1/ksatriya"
 )
 
-func Index(ctx *ksatriya.Context) {
+func Index(ctx ksatriya.Ctx) {
 	ctx.Text(http.StatusOK, "index")
 }
 
-func User(ctx *ksatriya.Context) {
+func User(ctx ksatriya.Ctx) {
 	name := ctx.Arg("name")
 	ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
@@ -67,11 +67,11 @@ func NewController() *Controller {
     return c
 }
 
-func (c *Controller) Index(ctx *ksatriya.Context) {
+func (c *Controller) Index(ctx ksatriya.Ctx) {
     ctx.Text(http.StatusOK, "index")
 }
 
-func (c *Controller) User(ctx *ksatriya.Context) {
+func (c *Controller) User(ctx ksatriya.Ctx) {
     name := ctx.Arg("name")
     ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
@@ -98,11 +98,11 @@ import (
 	"github.com/m0t0k1ch1/ksatriya"
 )
 
-func Index(ctx *ksatriya.Context) {
+func Index(ctx ksatriya.Ctx) {
 	ctx.Text(http.StatusOK, "index")
 }
 
-func User(ctx *ksatriya.Context) {
+func User(ctx ksatriya.Ctx) {
 	name := ctx.Arg("name")
 	ctx.Text(http.StatusOK, fmt.Sprintf("Hello %s!", name))
 }
