@@ -83,6 +83,70 @@ func main() {
 }
 ```
 
+### Use original context
+
+``` go
+package main
+
+import (
+	"io/ioutil"
+	"log"
+	"net/http"
+
+	"github.com/m0t0k1ch1/ksatriya"
+)
+
+type Context struct {
+	ksatriya.Ctx
+	client *http.Client
+}
+
+func NewContext(w http.ResponseWriter, req *http.Request, args ksatriya.Args) ksatriya.Ctx {
+	return &Context{
+		Ctx:    ksatriya.NewContext(w, req, args),
+		client: &http.Client{},
+	}
+}
+
+func convertContext(kctx ksatriya.Ctx) *Context {
+	ctx, _ := kctx.(*Context)
+	return ctx
+}
+
+func PingHandler(kctx ksatriya.Ctx) {
+	Ping(convertContext(kctx))
+}
+func Ping(ctx *Context) {
+	res, err := ctx.client.Get("http://127.0.0.1:8080/pong")
+	defer res.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx.Text(http.StatusOK, string(body))
+}
+
+func PongHandler(kctx ksatriya.Ctx) {
+	Pong(convertContext(kctx))
+}
+func Pong(ctx *Context) {
+	ctx.Text(http.StatusOK, "pong")
+}
+
+func main() {
+	k := ksatriya.New()
+	k.SetCtxBuilder(NewContext)
+	k.GET("/ping", PingHandler)
+	k.GET("/pong", PongHandler)
+	k.Run(":8080")
+}
+```
+
 ### With [negroni](https://github.com/codegangsta/negroni) and [go-server-starter](https://github.com/lestrrat/go-server-starter)
 
 ``` go
