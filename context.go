@@ -22,7 +22,6 @@ type Ctx interface {
 	ParamSingle(string) string
 	Text(int, string)
 	JSON(int, interface{})
-	HTML(int, string, RenderArgs)
 	Redirect(string)
 	Write(http.ResponseWriter)
 }
@@ -101,13 +100,6 @@ func (ctx *Context) JSON(stat int, data interface{}) {
 	res.SetStatusCode(stat)
 	res.SetContentType("application/json")
 	ctx.View().SetRenderer(NewJSONRenderer(data))
-}
-
-func (ctx *Context) HTML(stat int, tmplPath string, args RenderArgs) {
-	res := ctx.Res()
-	res.SetStatusCode(stat)
-	res.SetContentType("text/html")
-	ctx.View().SetRenderer(NewHTMLRenderer(tmplPath, args))
 }
 
 func (ctx *Context) Redirect(uri string) {
