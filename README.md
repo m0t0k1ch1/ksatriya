@@ -27,7 +27,7 @@ import (
 )
 
 func Ping (ctx ksatriya.Ctx) {
-	ctx.Text(http.StatusOK, "pong")
+	ctx.RenderText(http.StatusOK, "pong")
 }
 
 func main() {

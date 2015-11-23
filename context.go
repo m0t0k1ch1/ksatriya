@@ -20,8 +20,8 @@ type Ctx interface {
 	Params() Params
 	Param(string) ([]string, bool)
 	ParamSingle(string) string
-	Text(int, string)
-	JSON(int, interface{})
+	RenderText(int, string)
+	RenderJSON(int, interface{})
 	Redirect(string)
 	Write(http.ResponseWriter)
 }
@@ -88,14 +88,14 @@ func (ctx *Context) ParamSingle(name string) string {
 	return ""
 }
 
-func (ctx *Context) Text(stat int, text string) {
+func (ctx *Context) RenderText(stat int, text string) {
 	res := ctx.Res()
 	res.SetStatusCode(stat)
 	res.SetContentType("text/plain")
 	ctx.View().SetRenderer(NewTextRenderer(text))
 }
 
-func (ctx *Context) JSON(stat int, data interface{}) {
+func (ctx *Context) RenderJSON(stat int, data interface{}) {
 	res := ctx.Res()
 	res.SetStatusCode(stat)
 	res.SetContentType("application/json")
