@@ -46,13 +46,6 @@ type Controller struct {
 	filterFuncs map[string]FilterFunc
 }
 
-func NewController() *Controller {
-	return &Controller{
-		routes:      []*Handler{},
-		filterFuncs: map[string]FilterFunc{},
-	}
-}
-
 func (c *Controller) Routes() []*Handler {
 	return c.routes
 }
@@ -67,7 +60,7 @@ func (c *Controller) AddRoute(method, path string, hf HandlerFunc) {
 		path:        path,
 		handlerFunc: hf,
 	}
-	c.routes = append(c.routes, h)
+	c.routes = append(c.Routes(), h)
 }
 
 func (c *Controller) GET(path string, hf HandlerFunc) {
@@ -96,4 +89,11 @@ func (c *Controller) AddBeforeFilter(ff FilterFunc) {
 
 func (c *Controller) AddAfterFilter(ff FilterFunc) {
 	c.filterFuncs[AfterFilterFuncKey] = ff
+}
+
+func NewController() *Controller {
+	return &Controller{
+		routes:      []*Handler{},
+		filterFuncs: map[string]FilterFunc{},
+	}
 }

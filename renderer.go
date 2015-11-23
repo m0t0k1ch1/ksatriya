@@ -10,24 +10,18 @@ type TextRenderer struct {
 	text string
 }
 
+func (r *TextRenderer) Render() string {
+	return r.text
+}
+
 func NewTextRenderer(text string) *TextRenderer {
 	return &TextRenderer{
 		text: text,
 	}
 }
 
-func (r *TextRenderer) Render() string {
-	return r.text
-}
-
 type JSONRenderer struct {
 	data interface{}
-}
-
-func NewJSONRenderer(data interface{}) *JSONRenderer {
-	return &JSONRenderer{
-		data: data,
-	}
 }
 
 func (r *JSONRenderer) Render() string {
@@ -36,4 +30,10 @@ func (r *JSONRenderer) Render() string {
 		panic(err)
 	}
 	return string(b)
+}
+
+func NewJSONRenderer(data interface{}) *JSONRenderer {
+	return &JSONRenderer{
+		data: data,
+	}
 }

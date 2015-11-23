@@ -1,6 +1,7 @@
 package ksatriya
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"

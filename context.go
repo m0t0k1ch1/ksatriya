@@ -37,19 +37,6 @@ type Context struct {
 	params   Params
 }
 
-func NewContext(w http.ResponseWriter, req *http.Request, args Args) Ctx {
-	req.ParseForm()
-	params := map[string][]string(req.Form)
-
-	return &Context{
-		request:  req,
-		response: NewResponse(),
-		view:     NewView(),
-		args:     args,
-		params:   params,
-	}
-}
-
 func (ctx *Context) Req() *http.Request {
 	return ctx.request
 }
@@ -117,3 +104,16 @@ func (ctx *Context) Write(w http.ResponseWriter) {
 }
 
 func (ctx *Context) Finalize() {}
+
+func NewContext(w http.ResponseWriter, req *http.Request, args Args) Ctx {
+	req.ParseForm()
+	params := map[string][]string(req.Form)
+
+	return &Context{
+		request:  req,
+		response: NewResponse(),
+		view:     NewView(),
+		args:     args,
+		params:   params,
+	}
+}
