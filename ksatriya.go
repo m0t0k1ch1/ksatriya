@@ -62,6 +62,7 @@ func (k *Ksatriya) SetCtxBuilder(f CtxBuilder) {
 func (k *Ksatriya) handle(method, path string, hf HandlerFunc, filterFuncs map[string]FilterFunc) {
 	k.router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
 		ctx := k.ctxBuilder(w, req, Args{args})
+		defer ctx.Finalize()
 
 		if ff, ok := filterFuncs[BeforeFilterFuncKey]; ok {
 			ff(ctx)

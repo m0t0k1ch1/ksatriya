@@ -24,6 +24,7 @@ type Ctx interface {
 	RenderJSON(int, interface{})
 	Redirect(string)
 	Write(http.ResponseWriter)
+	Finalize()
 }
 
 type CtxBuilder func(w http.ResponseWriter, req *http.Request, args Args) Ctx
@@ -114,3 +115,5 @@ func (ctx *Context) Write(w http.ResponseWriter) {
 	res.SetBody(ctx.View().Render())
 	res.Write(w)
 }
+
+func (ctx *Context) Finalize() {}
