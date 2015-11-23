@@ -11,16 +11,17 @@ const (
 	RootDirDefault  = "static"
 )
 
+type Router struct {
+	*httprouter.Router
+}
+
+func NewRouter() *Router {
+	return &Router{httprouter.New()}
+}
+
 type Root struct {
 	path string
 	dir  http.FileSystem
-}
-
-func NewRoot() *Root {
-	root := &Root{}
-	root.SetPath(RootPathDefault)
-	root.SetDir(RootDirDefault)
-	return root
 }
 
 func (root *Root) Path() string {
@@ -37,18 +38,21 @@ func (root *Root) SetDir(val string) {
 	root.dir = http.Dir(val)
 }
 
+func NewRoot() *Root {
+	root := &Root{}
+	root.SetPath(RootPathDefault)
+	root.SetDir(RootDirDefault)
+	return root
+}
+
 type Ksatriya struct {
-	router     *httprouter.Router
+	router     *Router
 	root       *Root
 	ctxBuilder CtxBuilder
 }
 
-func New() *Ksatriya {
-	return &Ksatriya{
-		router:     httprouter.New(),
-		root:       NewRoot(),
-		ctxBuilder: NewContext,
-	}
+func (k *Ksatriya) Router() *Router {
+	return k.router
 }
 
 func (k *Ksatriya) Root() *Root {
@@ -60,7 +64,7 @@ func (k *Ksatriya) SetCtxBuilder(f CtxBuilder) {
 }
 
 func (k *Ksatriya) handle(method, path string, hf HandlerFunc, filterFuncs map[string]FilterFunc) {
-	k.router.Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
+	k.Router().Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
 		ctx := k.ctxBuilder(w, req, Args{args})
 		defer ctx.Finalize()
 
@@ -117,16 +121,24 @@ func (k *Ksatriya) RegisterController(d Dispacher) {
 }
 
 func (k *Ksatriya) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	k.router.ServeHTTP(w, req)
+	k.Router().ServeHTTP(w, req)
 }
 
 func (k *Ksatriya) ServeFiles() {
 	root := k.Root()
-	k.router.ServeFiles(root.Path(), root.Dir())
+	k.Router().ServeFiles(root.Path(), root.Dir())
 }
 
 func (k *Ksatriya) Run(addr string) {
-	if err := http.ListenAndServe(addr, k.router); err != nil {
-		panic(err)
+	if err := http.ListenAndServe(addr, k.Router()); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func New() *Ksatriya {
+	return &Ksatriya{
+		router:     NewRouter(),
+		root:       NewRoot(),
+		ctxBuilder: NewContext,
 	}
 }
