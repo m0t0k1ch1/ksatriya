@@ -64,18 +64,10 @@ func (k *Ksatriya) SetCtxBuilder(f CtxBuilder) {
 	k.ctxBuilder = f
 }
 
-func (k *Ksatriya) handle(method, path string, hf HandlerFunc, filterFuncs map[string]FilterFunc) {
+func (k *Ksatriya) AddRoute(method, path string, hf HandlerFunc) {
 	k.Router().Handle(method, path, func(w http.ResponseWriter, req *http.Request, args httprouter.Params) {
 		ctx := k.ctxBuilder(w, req, Args{args})
 		defer ctx.Finalize()
-
-		if ff, ok := filterFuncs[BeforeFilterFuncKey]; ok {
-			ff(ctx)
-			if ctx.Res().StatusCode() == http.StatusFound {
-				ctx.Write(w)
-				return
-			}
-		}
 
 		hf(ctx)
 		if ctx.Res().StatusCode() == http.StatusFound {
@@ -83,16 +75,8 @@ func (k *Ksatriya) handle(method, path string, hf HandlerFunc, filterFuncs map[s
 			return
 		}
 
-		if ff, ok := filterFuncs[AfterFilterFuncKey]; ok {
-			ff(ctx)
-		}
-
 		ctx.Write(w)
 	})
-}
-
-func (k *Ksatriya) AddRoute(method, path string, hf HandlerFunc) {
-	k.handle(method, path, hf, map[string]FilterFunc{})
 }
 
 func (k *Ksatriya) GET(path string, hf HandlerFunc) {
@@ -117,7 +101,7 @@ func (k *Ksatriya) DELETE(path string, hf HandlerFunc) {
 
 func (k *Ksatriya) RegisterController(d Dispacher) {
 	for _, h := range d.Routes() {
-		k.handle(h.Method(), h.Path(), h.HandlerFunc(), d.FilterFuncs())
+		k.AddRoute(h.Method(), h.Path(), h.HandlerFunc())
 	}
 }
 
