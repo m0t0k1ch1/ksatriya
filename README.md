@@ -5,7 +5,7 @@ ksatriya
 
 a tiny web application framework for golang
 
-* **ksatriya** do not support HTML rendering
+* **ksatriya** does not support HTML rendering
 * **ksatriya** is still under development, so API might be changed in future
 
 ``` sh
