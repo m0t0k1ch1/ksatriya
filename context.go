@@ -106,11 +106,14 @@ func (ctx *Context) Write(w http.ResponseWriter) {
 func (ctx *Context) Finalize() {}
 
 func NewContext(w http.ResponseWriter, req *http.Request, args Args) Ctx {
+	req.ParseForm()
+	params := map[string][]string(req.Form)
+
 	return &Context{
 		request:  NewRequest(req),
 		response: NewResponse(),
 		view:     NewView(),
 		args:     args,
-		params:   map[string][]string(req.Form),
+		params:   params,
 	}
 }
