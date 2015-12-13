@@ -8,13 +8,6 @@ type Response struct {
 	body       string
 }
 
-func NewResponse() *Response {
-	return &Response{
-		statusCode: http.StatusOK,
-		header:     http.Header{},
-	}
-}
-
 func (res *Response) StatusCode() int {
 	return res.statusCode
 }
@@ -48,4 +41,11 @@ func (res *Response) Write(w http.ResponseWriter) {
 	}
 	w.WriteHeader(res.StatusCode())
 	w.Write([]byte(res.Body()))
+}
+
+func NewResponse() *Response {
+	return &Response{
+		statusCode: http.StatusOK,
+		header:     http.Header{},
+	}
 }

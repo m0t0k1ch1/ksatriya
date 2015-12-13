@@ -12,7 +12,7 @@ type Args struct {
 type Params map[string][]string
 
 type Ctx interface {
-	Req() *http.Request
+	Req() *Request
 	Res() *Response
 	View() *View
 	Args() Args
@@ -30,14 +30,14 @@ type Ctx interface {
 type CtxBuilder func(w http.ResponseWriter, req *http.Request, args Args) Ctx
 
 type Context struct {
-	request  *http.Request
+	request  *Request
 	response *Response
 	view     *View
 	args     Args
 	params   Params
 }
 
-func (ctx *Context) Req() *http.Request {
+func (ctx *Context) Req() *Request {
 	return ctx.request
 }
 
@@ -106,14 +106,11 @@ func (ctx *Context) Write(w http.ResponseWriter) {
 func (ctx *Context) Finalize() {}
 
 func NewContext(w http.ResponseWriter, req *http.Request, args Args) Ctx {
-	req.ParseForm()
-	params := map[string][]string(req.Form)
-
 	return &Context{
-		request:  req,
+		request:  NewRequest(req),
 		response: NewResponse(),
 		view:     NewView(),
 		args:     args,
-		params:   params,
+		params:   map[string][]string(req.Form),
 	}
 }
