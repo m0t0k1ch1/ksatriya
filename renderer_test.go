@@ -7,15 +7,15 @@ import (
 )
 
 func TestTextRenderer(t *testing.T) {
-	renderer := NewTextRenderer("text")
+	r := NewTextRenderer("text")
 
-	assert.Equal(t, "text", renderer.Render())
+	assert.Equal(t, "text", r.Render())
 }
 
 func TestJSONRenderer(t *testing.T) {
 	json := map[string]string{}
 	json["key"] = "value"
-	renderer := NewJSONRenderer(json)
+	r := NewJSONRenderer(json)
 
-	assert.Equal(t, "{\"key\":\"value\"}", renderer.Render())
+	assert.Equal(t, "{\"key\":\"value\"}", r.Render())
 }

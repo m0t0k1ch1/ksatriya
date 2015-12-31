@@ -11,15 +11,15 @@ func TestView(t *testing.T) {
 
 	assert.Zero(t, v.Renderer())
 
-	textRenderer := NewTextRenderer("text")
-	v.SetRenderer(textRenderer)
+	tr := NewTextRenderer("text")
+	v.SetRenderer(tr)
 
-	assert.Equal(t, textRenderer.Render(), v.Render())
+	assert.Equal(t, tr.Render(), v.Render())
 
 	json := map[string]string{}
 	json["key"] = "value"
-	jsonRenderer := NewJSONRenderer(json)
-	v.SetRenderer(jsonRenderer)
+	jr := NewJSONRenderer(json)
+	v.SetRenderer(jr)
 
-	assert.Equal(t, jsonRenderer.Render(), v.Render())
+	assert.Equal(t, jr.Render(), v.Render())
 }
