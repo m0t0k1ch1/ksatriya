@@ -15,7 +15,6 @@ func TestTextRenderer(t *testing.T) {
 func TestJSONRenderer(t *testing.T) {
 	json := map[string]string{}
 	json["key"] = "value"
-
 	renderer := NewJSONRenderer(json)
 
 	assert.Equal(t, "{\"key\":\"value\"}", renderer.Render())
