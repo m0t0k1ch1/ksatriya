@@ -15,6 +15,7 @@ func TestKsatriya_ServeHTTP(t *testing.T) {
 		res := fmt.Sprintf("your name is %s", name)
 		ctx.RenderText(http.StatusOK, res)
 	})
+
 	handler := k.ServeHTTP
 
 	assert.HTTPSuccess(t, handler, "GET", "/user/m0t0k1ch1", nil)
@@ -29,6 +30,7 @@ func TestKsatriya_ServeHTTP_redirection(t *testing.T) {
 	k.GET("/redirect", func(ctx Ctx) {
 		ctx.Redirect("/")
 	})
+
 	handler := k.ServeHTTP
 
 	assert.HTTPRedirect(t, handler, "GET", "/redirect", nil)
