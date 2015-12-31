@@ -16,10 +16,10 @@ func TestKsatriya_ServeHTTP(t *testing.T) {
 		ctx.RenderText(http.StatusOK, res)
 	})
 
-	handler := k.ServeHTTP
+	h := k.ServeHTTP
 
-	assert.HTTPSuccess(t, handler, "GET", "/user/m0t0k1ch1", nil)
-	assert.HTTPBodyContains(t, handler, "GET", "/user/m0t0k1ch1", nil, "your name is m0t0k1ch1")
+	assert.HTTPSuccess(t, h, "GET", "/user/m0t0k1ch1", nil)
+	assert.HTTPBodyContains(t, h, "GET", "/user/m0t0k1ch1", nil, "your name is m0t0k1ch1")
 }
 
 func TestKsatriya_ServeHTTP_redirection(t *testing.T) {
@@ -31,9 +31,9 @@ func TestKsatriya_ServeHTTP_redirection(t *testing.T) {
 		ctx.Redirect("/")
 	})
 
-	handler := k.ServeHTTP
+	h := k.ServeHTTP
 
-	assert.HTTPRedirect(t, handler, "GET", "/redirect", nil)
+	assert.HTTPRedirect(t, h, "GET", "/redirect", nil)
 }
 
 func TestKsatriya_ServeHTTP_withController(t *testing.T) {
@@ -45,8 +45,8 @@ func TestKsatriya_ServeHTTP_withController(t *testing.T) {
 	k := New()
 	k.RegisterController(c)
 
-	handler := k.ServeHTTP
+	h := k.ServeHTTP
 
-	assert.HTTPSuccess(t, handler, "GET", "/ping", nil)
-	assert.HTTPBodyContains(t, handler, "GET", "/ping", nil, "pong")
+	assert.HTTPSuccess(t, h, "GET", "/ping", nil)
+	assert.HTTPBodyContains(t, h, "GET", "/ping", nil, "pong")
 }
