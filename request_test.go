@@ -12,7 +12,7 @@ type TestUser struct {
 	Name string `json:"name"`
 }
 
-func TestRequest_BodyJSON(t *testing.T) {
+func TestRequest(t *testing.T) {
 	r := strings.NewReader("{\"name\":\"m0t0k1ch1\"}")
 	req, err := http.NewRequest("GET", "/", r)
 	assert.NoError(t, err)
