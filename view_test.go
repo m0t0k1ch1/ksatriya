@@ -16,9 +16,9 @@ func TestView(t *testing.T) {
 
 	assert.Equal(t, tr.Render(), v.Render())
 
-	json := map[string]string{}
-	json["key"] = "value"
-	jr := NewJSONRenderer(json)
+	j := map[string]string{}
+	j["key"] = "value"
+	jr := NewJSONRenderer(j)
 	v.SetRenderer(jr)
 
 	assert.Equal(t, jr.Render(), v.Render())
