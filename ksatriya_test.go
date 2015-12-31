@@ -35,3 +35,18 @@ func TestKsatriya_ServeHTTP_redirection(t *testing.T) {
 
 	assert.HTTPRedirect(t, handler, "GET", "/redirect", nil)
 }
+
+func TestKsatriya_ServeHTTP_withController(t *testing.T) {
+	c := NewController()
+	c.GET("/ping", func(ctx Ctx) {
+		ctx.RenderText(http.StatusOK, "pong")
+	})
+
+	k := New()
+	k.RegisterController(c)
+
+	handler := k.ServeHTTP
+
+	assert.HTTPSuccess(t, handler, "GET", "/ping", nil)
+	assert.HTTPBodyContains(t, handler, "GET", "/ping", nil, "pong")
+}
