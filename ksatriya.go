@@ -9,24 +9,6 @@ import (
 
 type HandlerFunc func(Ctx)
 
-type Handler struct {
-	method      string
-	path        string
-	handlerFunc HandlerFunc
-}
-
-func (h *Handler) Method() string {
-	return h.method
-}
-
-func (h *Handler) Path() string {
-	return h.path
-}
-
-func (h *Handler) HandlerFunc() HandlerFunc {
-	return h.handlerFunc
-}
-
 type Router struct {
 	*httprouter.Router
 }
