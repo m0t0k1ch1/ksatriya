@@ -6,16 +6,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTextRenderer(t *testing.T) {
-	r := NewTextRenderer("text")
+func TestRenderer(t *testing.T) {
+	// new text renderer
+	tr := NewTextRenderer("text")
 
-	assert.Equal(t, "text", r.Render())
-}
+	// render text
+	assert.Equal(t, "text", tr.Render())
 
-func TestJSONRenderer(t *testing.T) {
 	j := map[string]string{}
 	j["key"] = "value"
-	r := NewJSONRenderer(j)
 
-	assert.Equal(t, "{\"key\":\"value\"}", r.Render())
+	// new json renderer
+	jr := NewJSONRenderer(j)
+
+	// render json
+	assert.Equal(t, "{\"key\":\"value\"}", jr.Render())
 }
