@@ -22,15 +22,15 @@ func (res *Response) SetHeader(key, val string) {
 	res.header.Set(key, val)
 }
 
+func (res *Response) SetContentType(val string) {
+	res.SetHeader("Content-Type", val)
+}
+
 func (res *Response) Body() string {
 	return res.body
 }
 func (res *Response) SetBody(val string) {
 	res.body = val
-}
-
-func (res *Response) SetContentType(val string) {
-	res.SetHeader("Content-Type", val)
 }
 
 func (res *Response) Write(w http.ResponseWriter) {
