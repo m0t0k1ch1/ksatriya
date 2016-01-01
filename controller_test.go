@@ -38,10 +38,12 @@ func TestController(t *testing.T) {
 			c.DELETE(path, hf)
 		}
 		assert.Len(t, c.Routes(), i+1)
+
+		// test handler
 		h := c.Routes()[i]
+		h.HandlerFunc()(ctx)
 		assert.Equal(t, method, h.Method())
 		assert.Equal(t, path, h.Path())
-		h.HandlerFunc()(ctx)
 		assert.True(t, called)
 	}
 }
