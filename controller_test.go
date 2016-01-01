@@ -1,8 +1,8 @@
 package ksatriya
 
 import (
-	"fmt"
-	"strings"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,37 +13,62 @@ func TestController(t *testing.T) {
 	c := NewController()
 	assert.Equal(t, []*Handler{}, c.Routes())
 
-	methods := []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
-	ctx := newTestContext(t)
+	calledMethods := []string{}
 
-	for i, method := range methods {
-		path := fmt.Sprintf("/%s", strings.ToLower(method))
+	// add routes
+	c.GET("/get", func(ctx Ctx) {
+		calledMethods = append(calledMethods, "GET")
+	})
+	c.POST("/post", func(ctx Ctx) {
+		calledMethods = append(calledMethods, "POST")
+	})
+	c.PUT("/put", func(ctx Ctx) {
+		calledMethods = append(calledMethods, "PUT")
+	})
+	c.PATCH("/patch", func(ctx Ctx) {
+		calledMethods = append(calledMethods, "PATCH")
+	})
+	c.DELETE("/delete", func(ctx Ctx) {
+		calledMethods = append(calledMethods, "DELETE")
+	})
+	assert.Len(t, c.Routes(), 5)
 
-		called := false
-		hf := func(ctx Ctx) {
-			called = true
-		}
+	// GET /get
+	hGET := c.Routes()[0]
+	assert.Equal(t, "GET", hGET.Method())
+	assert.Equal(t, "/get", hGET.Path())
 
-		// add route
-		switch method {
-		case "GET":
-			c.GET(path, hf)
-		case "POST":
-			c.POST(path, hf)
-		case "PUT":
-			c.PUT(path, hf)
-		case "PATCH":
-			c.PATCH(path, hf)
-		case "DELETE":
-			c.DELETE(path, hf)
-		}
-		assert.Len(t, c.Routes(), i+1)
+	// POST /post
+	hPOST := c.Routes()[1]
+	assert.Equal(t, "POST", hPOST.Method())
+	assert.Equal(t, "/post", hPOST.Path())
 
-		// test handler
-		h := c.Routes()[i]
-		h.HandlerFunc()(ctx)
-		assert.Equal(t, method, h.Method())
-		assert.Equal(t, path, h.Path())
-		assert.True(t, called)
-	}
+	// PUT /put
+	hPUT := c.Routes()[2]
+	assert.Equal(t, "PUT", hPUT.Method())
+	assert.Equal(t, "/put", hPUT.Path())
+
+	// PATCH /patch
+	hPATCH := c.Routes()[3]
+	assert.Equal(t, "PATCH", hPATCH.Method())
+	assert.Equal(t, "/patch", hPATCH.Path())
+
+	// DELETE /delete
+	hDELETE := c.Routes()[4]
+	assert.Equal(t, "DELETE", hDELETE.Method())
+	assert.Equal(t, "/delete", hDELETE.Path())
+
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/", nil)
+	assert.NoError(t, err)
+
+	ctx := NewContext(rec, req, Args{})
+
+	// call handler func
+	hGET.HandlerFunc()(ctx)
+	hPOST.HandlerFunc()(ctx)
+	hPUT.HandlerFunc()(ctx)
+	hPATCH.HandlerFunc()(ctx)
+	hDELETE.HandlerFunc()(ctx)
+	assert.Equal(t, []string{"GET", "POST", "PUT", "PATCH", "DELETE"}, calledMethods)
 }
