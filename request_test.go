@@ -17,10 +17,12 @@ func TestRequest(t *testing.T) {
 	req, err := http.NewRequest("GET", "/", r)
 	assert.NoError(t, err)
 
+	// new request
 	kreq := NewRequest(req)
 
 	var u TestUser
-	kreq.BodyJSON(&u)
 
+	// decode body json
+	kreq.BodyJSON(&u)
 	assert.Equal(t, "m0t0k1ch1", u.Name)
 }
