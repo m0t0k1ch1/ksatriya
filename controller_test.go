@@ -33,42 +33,44 @@ func TestController(t *testing.T) {
 	})
 	assert.Len(t, c.Routes(), 5)
 
-	// GET /get
-	hGET := c.Routes()[0]
-	assert.Equal(t, "GET", hGET.Method())
-	assert.Equal(t, "/get", hGET.Path())
-
-	// POST /post
-	hPOST := c.Routes()[1]
-	assert.Equal(t, "POST", hPOST.Method())
-	assert.Equal(t, "/post", hPOST.Path())
-
-	// PUT /put
-	hPUT := c.Routes()[2]
-	assert.Equal(t, "PUT", hPUT.Method())
-	assert.Equal(t, "/put", hPUT.Path())
-
-	// PATCH /patch
-	hPATCH := c.Routes()[3]
-	assert.Equal(t, "PATCH", hPATCH.Method())
-	assert.Equal(t, "/patch", hPATCH.Path())
-
-	// DELETE /delete
-	hDELETE := c.Routes()[4]
-	assert.Equal(t, "DELETE", hDELETE.Method())
-	assert.Equal(t, "/delete", hDELETE.Path())
-
 	rec := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/", nil)
 	assert.NoError(t, err)
 
 	ctx := NewContext(rec, req, Args{})
 
-	// call handler func
+	// GET /get
+	hGET := c.Routes()[0]
 	hGET.HandlerFunc()(ctx)
+	assert.Equal(t, "GET", hGET.Method())
+	assert.Equal(t, "/get", hGET.Path())
+	assert.Equal(t, []string{"GET"}, calledMethods)
+
+	// POST /post
+	hPOST := c.Routes()[1]
 	hPOST.HandlerFunc()(ctx)
+	assert.Equal(t, "POST", hPOST.Method())
+	assert.Equal(t, "/post", hPOST.Path())
+	assert.Equal(t, []string{"GET", "POST"}, calledMethods)
+
+	// PUT /put
+	hPUT := c.Routes()[2]
 	hPUT.HandlerFunc()(ctx)
+	assert.Equal(t, "PUT", hPUT.Method())
+	assert.Equal(t, "/put", hPUT.Path())
+	assert.Equal(t, []string{"GET", "POST", "PUT"}, calledMethods)
+
+	// PATCH /patch
+	hPATCH := c.Routes()[3]
 	hPATCH.HandlerFunc()(ctx)
+	assert.Equal(t, "PATCH", hPATCH.Method())
+	assert.Equal(t, "/patch", hPATCH.Path())
+	assert.Equal(t, []string{"GET", "POST", "PUT", "PATCH"}, calledMethods)
+
+	// DELETE /delete
+	hDELETE := c.Routes()[4]
 	hDELETE.HandlerFunc()(ctx)
+	assert.Equal(t, "DELETE", hDELETE.Method())
+	assert.Equal(t, "/delete", hDELETE.Path())
 	assert.Equal(t, []string{"GET", "POST", "PUT", "PATCH", "DELETE"}, calledMethods)
 }
