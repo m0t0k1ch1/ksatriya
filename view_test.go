@@ -9,7 +9,7 @@ import (
 func TestView(t *testing.T) {
 	// new view
 	v := NewView()
-	assert.Zero(t, v.Renderer())
+	assert.Empty(t, v.Renderer())
 
 	tr := NewTextRenderer("text")
 
@@ -20,9 +20,7 @@ func TestView(t *testing.T) {
 	// render text
 	assert.Equal(t, tr.Render(), v.Render())
 
-	j := map[string]string{}
-	j["key"] = "value"
-	jr := NewJSONRenderer(j)
+	jr := NewJSONRenderer(map[string]string{"key": "value"})
 
 	// set json renderer
 	v.SetRenderer(jr)

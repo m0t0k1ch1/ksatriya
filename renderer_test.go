@@ -13,11 +13,8 @@ func TestRenderer(t *testing.T) {
 	// render text
 	assert.Equal(t, "text", tr.Render())
 
-	j := map[string]string{}
-	j["key"] = "value"
-
 	// new json renderer
-	jr := NewJSONRenderer(j)
+	jr := NewJSONRenderer(map[string]string{"key": "value"})
 
 	// render json
 	assert.Equal(t, "{\"key\":\"value\"}", jr.Render())

@@ -13,7 +13,7 @@ func TestResponse(t *testing.T) {
 	res := NewResponse()
 	assert.Equal(t, http.StatusOK, res.StatusCode())
 	assert.Equal(t, http.Header{}, res.Header())
-	assert.Zero(t, res.Body())
+	assert.Empty(t, res.Body())
 
 	// set status code
 	res.SetStatusCode(http.StatusInternalServerError)
