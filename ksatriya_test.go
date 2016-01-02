@@ -9,6 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type MyTestContext struct {
+	Ctx
+	testField string
+}
+
 func TestKsatriya(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := &http.Request{}
@@ -100,4 +105,23 @@ func TestKsatriya_withController(t *testing.T) {
 
 	assert.HTTPSuccess(t, h, "GET", "/ping", nil)
 	assert.HTTPBodyContains(t, h, "GET", "/ping", nil, "pong")
+}
+
+func TestKsatriya_withCtxBuilder(t *testing.T) {
+	k := New()
+	k.SetCtxBuilder(func(w http.ResponseWriter, req *http.Request, args Args) Ctx {
+		return &MyTestContext{
+			Ctx:       NewContext(w, req, args),
+			testField: "test_value",
+		}
+	})
+	k.GET("/", func(ctx Ctx) {
+		myctx := ctx.(*MyTestContext)
+		ctx.RenderText(http.StatusOK, myctx.testField)
+	})
+
+	h := k.ServeHTTP
+
+	assert.HTTPSuccess(t, h, "GET", "/", nil)
+	assert.HTTPBodyContains(t, h, "GET", "/", nil, "test_value")
 }
