@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type TestUser struct {
+type MyTestUser struct {
 	Name string `json:"name"`
 }
 
@@ -20,7 +20,7 @@ func TestRequest(t *testing.T) {
 	// new request
 	kreq := NewRequest(req)
 
-	var u TestUser
+	var u MyTestUser
 
 	// decode body json
 	kreq.BodyJSON(&u)
