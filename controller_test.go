@@ -1,8 +1,6 @@
 package ksatriya
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,11 +31,7 @@ func TestController(t *testing.T) {
 	})
 	assert.Len(t, c.Routes(), 5)
 
-	rec := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/", nil)
-	assert.NoError(t, err)
-
-	ctx := NewContext(rec, req, Args{})
+	ctx := newTestContext()
 
 	// GET /get
 	hGET := c.Routes()[0]
