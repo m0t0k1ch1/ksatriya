@@ -20,13 +20,6 @@ func (h *Handler) HandlerFunc() HandlerFunc {
 
 type Dispacher interface {
 	Routes() []*Handler
-
-	AddRoute(method, path string, hf HandlerFunc)
-	GET(path string, hf HandlerFunc)
-	POST(path string, hf HandlerFunc)
-	PUT(path string, hf HandlerFunc)
-	PATCH(path string, hf HandlerFunc)
-	DELETE(path string, hf HandlerFunc)
 }
 
 type Controller struct {
