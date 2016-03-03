@@ -11,7 +11,7 @@ func (v *View) SetRenderer(val Renderer) {
 	v.renderer = val
 }
 
-func (v *View) Render() string {
+func (v *View) Render() (string, error) {
 	return v.Renderer().Render()
 }
 

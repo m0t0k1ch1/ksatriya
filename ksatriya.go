@@ -42,7 +42,11 @@ func (k *Ksatriya) AddRoute(method, path string, hf HandlerFunc) {
 
 		hf(ctx)
 
-		ctx.WriteResponse(w)
+		if err := ctx.WriteResponse(w); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Add("Content-Type", "text/plain")
+			w.Write([]byte(err.Error()))
+		}
 	})
 }
 

@@ -18,7 +18,11 @@ func TestView(t *testing.T) {
 	assert.Equal(t, tr, v.Renderer())
 
 	// render text
-	assert.Equal(t, tr.Render(), v.Render())
+	rText, err := tr.Render()
+	assert.NoError(t, err)
+	vText, err := v.Render()
+	assert.NoError(t, err)
+	assert.Equal(t, rText, vText)
 
 	jr := NewJSONRenderer(map[string]string{"key": "value"})
 
@@ -27,5 +31,9 @@ func TestView(t *testing.T) {
 	assert.Equal(t, jr, v.Renderer())
 
 	// render json
-	assert.Equal(t, jr.Render(), v.Render())
+	rJSON, err := jr.Render()
+	assert.NoError(t, err)
+	vJSON, err := v.Render()
+	assert.NoError(t, err)
+	assert.Equal(t, rJSON, vJSON)
 }

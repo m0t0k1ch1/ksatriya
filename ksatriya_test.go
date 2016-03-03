@@ -78,6 +78,19 @@ func TestKsatriya_redirection(t *testing.T) {
 	assert.HTTPRedirect(t, h, "GET", "/redirect", nil)
 }
 
+func TestKsatriya_errorHandling(t *testing.T) {
+	k := New()
+	k.GET("/", func(ctx Ctx) {
+		ctx.RenderJSON(http.StatusOK, func() {
+			return
+		})
+	})
+
+	h := k.ServeHTTP
+
+	assert.HTTPError(t, h, "GET", "/", nil)
+}
+
 func TestKsatriya_withArgs(t *testing.T) {
 	k := New()
 	k.GET("/user/:name", func(ctx Ctx) {
