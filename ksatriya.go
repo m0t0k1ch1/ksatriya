@@ -41,10 +41,6 @@ func (k *Ksatriya) AddRoute(method, path string, hf HandlerFunc) {
 		defer ctx.Finalize()
 
 		hf(ctx)
-		if ctx.Res().StatusCode() == http.StatusFound {
-			ctx.Write(w)
-			return
-		}
 
 		ctx.Write(w)
 	})
