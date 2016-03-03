@@ -42,7 +42,7 @@ func (k *Ksatriya) AddRoute(method, path string, hf HandlerFunc) {
 
 		hf(ctx)
 
-		ctx.Write(w)
+		ctx.WriteResponse(w)
 	})
 }
 

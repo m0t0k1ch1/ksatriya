@@ -51,7 +51,7 @@ func TestContext_RenderText(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	ctx.Write(rec)
+	ctx.WriteResponse(rec)
 	assert.Equal(t, "text", rec.Body.String())
 }
 
@@ -67,7 +67,7 @@ func TestContext_RenderJSON(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	ctx.Write(rec)
+	ctx.WriteResponse(rec)
 	assert.Equal(t, "{\"key\":\"value\"}", rec.Body.String())
 }
 
@@ -81,6 +81,6 @@ func TestContext_Redirect(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	ctx.Write(rec)
+	ctx.WriteResponse(rec)
 	assert.Empty(t, rec.Body.String())
 }

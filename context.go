@@ -23,7 +23,7 @@ type Ctx interface {
 	RenderText(int, string)
 	RenderJSON(int, interface{})
 	Redirect(string)
-	Write(http.ResponseWriter)
+	WriteResponse(http.ResponseWriter)
 	Finalize()
 }
 
@@ -97,10 +97,10 @@ func (ctx *Context) Redirect(uri string) {
 	ctx.View().SetRenderer(NewTextRenderer(""))
 }
 
-func (ctx *Context) Write(w http.ResponseWriter) {
+func (ctx *Context) WriteResponse(w http.ResponseWriter) {
 	res := ctx.Res()
 	res.SetBody(ctx.View().Render())
-	res.Write(w)
+	res.WriteHeaderAndBody(w)
 }
 
 func (ctx *Context) Finalize() {}

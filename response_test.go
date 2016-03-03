@@ -34,7 +34,7 @@ func TestResponse(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	// write
-	res.Write(rec)
+	res.WriteHeaderAndBody(rec)
 	header := rec.Header()
 	assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	assert.Equal(t, "m0t0k1ch1", header.Get("X-Ksatriya-User"))

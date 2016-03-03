@@ -33,13 +33,21 @@ func (res *Response) SetBody(val string) {
 	res.body = val
 }
 
-func (res *Response) Write(w http.ResponseWriter) {
+func (res *Response) WriteHeaderAndBody(w http.ResponseWriter) {
+	res.WriteHeader(w)
+	res.WriteBody(w)
+}
+
+func (res *Response) WriteHeader(w http.ResponseWriter) {
 	for key, vals := range res.Header() {
 		for _, val := range vals {
 			w.Header().Add(key, val)
 		}
 	}
 	w.WriteHeader(res.StatusCode())
+}
+
+func (res *Response) WriteBody(w http.ResponseWriter) {
 	w.Write([]byte(res.Body()))
 }
 
