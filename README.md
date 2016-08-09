@@ -12,7 +12,7 @@ a tiny web application framework for golang
 $ go get github.com/m0t0k1ch1/ksatriya
 ```
 
-## Examples
+## Example
 
 ref. https://github.com/m0t0k1ch1/ksatriya-sample
 
