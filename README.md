@@ -5,9 +5,6 @@ ksatriya
 
 a tiny web application framework for golang
 
-* **ksatriya** does not support HTML rendering
-* **ksatriya** is still under development, so API might be changed in future
-
 ``` sh
 $ go get github.com/m0t0k1ch1/ksatriya
 ```
